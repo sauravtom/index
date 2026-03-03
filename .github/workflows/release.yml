@@ -18,13 +18,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build release binary
-        run: |
-          cd yoyo
-          cargo build --release
+        run: cargo build --release
 
       - name: Package binary
         run: |
-          cd yoyo
           mkdir -p dist
           cp target/release/yoyo dist/yoyo-x86_64-unknown-linux-gnu
           tar -C dist -czf yoyo-x86_64-unknown-linux-gnu.tar.gz yoyo-x86_64-unknown-linux-gnu
@@ -32,6 +29,6 @@ jobs:
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: yoyo/yoyo-x86_64-unknown-linux-gnu.tar.gz
+          files: yoyo-x86_64-unknown-linux-gnu.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
