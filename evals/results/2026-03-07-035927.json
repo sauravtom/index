@@ -1,0 +1,220 @@
+{
+  "run_id": "2026-03-07-035927",
+  "codebase": "ripgrep",
+  "yoyo_version": "0.16.3",
+  "model_agent": "claude-haiku-4-5-20251001",
+  "model_judge": "claude-haiku-4-5-20251001",
+  "tasks_run": 5,
+  "totals": {
+    "cc": {
+      "correct": 0,
+      "total": 5
+    },
+    "yoyo": {
+      "correct": 1,
+      "total": 5
+    }
+  },
+  "tasks": [
+    {
+      "id": "rg-004",
+      "type": "fan_out",
+      "cc": {
+        "answer": "I cannot determine this from the available output. The grep search for 'fn calls' returned no results, which means either:\n\n1. There is no function or variable named `calls` in the search results\n2. The file `crates/core/search.rs` doesn't exist or wasn't searched\n3. The search pattern didn't match the target code\n\nTo answer your question about the exact number of entries in the `calls` array, I would need the actual content of the `crates/core/search.rs` file or a more targeted search result showing the `calls` array definition.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to provide answer, claiming inability to access file content"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to answer the question, claiming inability to determine the value from available output."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "I cannot determine this from the available output. The search for \"calls\" returned no matches (empty results array). To answer your question about the number of entries in a `calls` array within `crates/core/search.rs`, I would need the actual file content or search results that locate and display that specific array.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to answer, claiming unavailable data, but ground truth shows answer is 4"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to provide the factual answer (4) that was verifiable from available context."
+          }
+        }
+      }
+    },
+    {
+      "id": "rg-009",
+      "type": "fan_out",
+      "cc": {
+        "answer": "I cannot determine this from the available output. The grep search for 'fn calls' returned no results, and without access to the actual contents of `crates/core/flags/hiargs.rs`, I cannot see the `from_low_args` match statement or count the entries in its `calls` array.\n\nTo answer this question, I would need the tool to output the relevant section of the `hiargs.rs` file containing the `from_low_args` match and its `calls` array definition.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to answer, citing inability to access file contents"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to provide the answer despite ground truth showing it should be 14."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "I cannot determine this from the available output. The search tool returned no matches for \"calls\", which means I cannot access the `from_low_args` function or examine the `calls` array in `crates/core/flags/hiargs.rs`. \n\nTo answer your question, I would need the tool output to actually contain the relevant code from that file showing the `calls` array definition.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to answer, claimed inability to access file despite ground truth being 14"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to provide the answer despite ground truth being available (14 entries)."
+          }
+        }
+      }
+    },
+    {
+      "id": "rg-012",
+      "type": "fan_out",
+      "cc": {
+        "answer": "I cannot determine this from the available output. The grep search for 'fn calls' returned no results, which means the search didn't find the relevant code section. To answer your question about the number of entries in the `calls` array within the `generate_work` function in `crates/ignore/src/walk.rs`, I would need to see the actual code from that file, which is not provided in the tool output.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to provide answer, citing unavailable output. Ground truth shows count is 11."
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to answer the question rather than providing the correct count of 11 entries."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "I cannot determine this from the available output. The search results show that there are no matches for `calls` in the project. To answer your question about the number of entries in a `calls` array within the `generate_work` function in `crates/ignore/src/walk.rs`, I would need search results that actually contain matches from that file.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to answer despite ground truth showing count is 11"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to provide the answer (11 entries) despite ground truth being available."
+          }
+        }
+      }
+    },
+    {
+      "id": "rg-015",
+      "type": "fan_out",
+      "cc": {
+        "answer": "I cannot determine this from the available output. The grep search for 'fn calls' returned no results, and I don't have access to the actual content of `crates/ignore/src/walk.rs` to examine the `calls` array in the primary `build` match. To answer this question accurately, I would need to see the file contents or a more specific search result that shows the actual array definition.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to provide answer, citing inability to access file contents"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to answer instead of providing the correct count of 9 entries."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "I cannot determine this from the available output. The search tool returned no matches for \"calls\" in the project, so I cannot provide information about a `calls` array or its entries in `crates/ignore/src/walk.rs`.\n\nTo answer this question accurately, I would need the actual code content from that file showing the `calls` array definition.",
+        "score": {
+          "scores": {
+            "calls_array_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent declined to provide answer, citing tool limitations rather than attempting search"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent refused to answer citing unavailable output, when the correct answer is 9 entries."
+          }
+        }
+      }
+    },
+    {
+      "id": "rg-018",
+      "type": "health_dead_code",
+      "cc": {
+        "answer": "I cannot determine this from the available output. The tool output indicates that no native tool is available and would require reading all files and manual analysis. Without access to the actual codebase files or the output from running the health tool on ripgrep, I cannot provide the exact count of items in the `dead_code` array.",
+        "score": {
+          "scores": {
+            "dead_code_count": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "refused",
+              "note": "Agent refused to provide answer despite question requesting exact count"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent declined to answer the factual question about dead code count, constituting a refusal."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "According to the tool output, the `dead_code` array contains **84 items**.",
+        "score": {
+          "scores": {
+            "dead_code_count": {
+              "correct": true,
+              "confidence": "high",
+              "failure_mode": "correct",
+              "note": "Answer states exactly 84 items, matching ground truth precisely."
+            }
+          },
+          "overall": {
+            "correct_count": 1,
+            "total": 1,
+            "summary": "Agent correctly identified the exact count of 84 items in the dead_code array."
+          }
+        }
+      }
+    }
+  ]
+}
