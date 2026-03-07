@@ -1,0 +1,100 @@
+{
+  "run_id": "2026-03-07-135010",
+  "codebase": "tokio",
+  "yoyo_version": "0.20.2",
+  "model_agent": "claude-haiku-4-5-20251001",
+  "model_judge": "claude-haiku-4-5-20251001",
+  "tasks_run": 2,
+  "totals": {
+    "cc": {
+      "correct": 0,
+      "total": 2
+    },
+    "yoyo": {
+      "correct": 1,
+      "total": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "tk-003",
+      "type": "module_path",
+      "cc": {
+        "answer": "Based on the grep output, `poll_acquire` is located at line 397 in `/Users/avirajkhare/ttt/tokio/tokio-master/tokio/src/sync/batch_semaphore.rs`.\n\nFrom the file path, the module path would be: **`tokio::sync::batch_semaphore`**\n\nHowever, without seeing the actual code content around line 397, I cannot determine if `poll_acquire` is defined directly in the `batch_semaphore` module or if it's part of an `impl` block for a specific struct/trait within that module. To provide the complete answer (e.g., whether it's `tokio::sync::batch_semaphore::SomeStruct::poll_acquire`), I would need to see the actual code content, which is not provided in the tool output.",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "wrong_fact",
+              "note": "Agent gave 'tokio::sync::batch_semaphore' instead of 'tokio::src::sync'"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent provided incorrect module path by omitting 'src' directory level in the path hierarchy."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "Based on the tool output, `poll_acquire` in `tokio/src/sync/batch_semaphore.rs` belongs to the module with the full path:\n\n**`tokio::sync`**\n\nThis is shown in the `module_path` field of the match result.",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "wrong_fact",
+              "note": "Agent gave 'tokio::sync' but ground truth is 'tokio-master::tokio::src::sync'"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent provided incomplete module path, omitting 'tokio-master' prefix and 'src' segment."
+          }
+        }
+      }
+    },
+    {
+      "id": "tk-014",
+      "type": "module_path",
+      "cc": {
+        "answer": "Based on the grep output, `spawn_blocking` in `tokio/src/runtime/blocking/pool.rs` belongs to the **`tokio::runtime::blocking::pool`** module.\n\nThis can be determined from the file path: `/Users/avirajkhare/ttt/tokio/tokio-master/tokio/src/runtime/blocking/pool.rs`, which indicates the module hierarchy `tokio::runtime::blocking::pool`.",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "wrong_fact",
+              "note": "Agent said `tokio::runtime::blocking::pool` but ground truth is `tokio::src::runtime::blocking`"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent incorrectly identified the module as including 'pool' when it should only be 'tokio::src::runtime::blocking'."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "Based on the tool output, `spawn_blocking` in `tokio/src/runtime/blocking/pool.rs` belongs to the module `tokio::runtime::blocking`.",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": true,
+              "confidence": "high",
+              "failure_mode": "correct",
+              "note": "Agent correctly identifies module as tokio::runtime::blocking"
+            }
+          },
+          "overall": {
+            "correct_count": 1,
+            "total": 1,
+            "summary": "Agent accurately identified the module path for spawn_blocking function."
+          }
+        }
+      }
+    }
+  ]
+}

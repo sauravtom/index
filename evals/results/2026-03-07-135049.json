@@ -1,0 +1,100 @@
+{
+  "run_id": "2026-03-07-135049",
+  "codebase": "tokio",
+  "yoyo_version": "0.20.2",
+  "model_agent": "claude-haiku-4-5-20251001",
+  "model_judge": "claude-haiku-4-5-20251001",
+  "tasks_run": 2,
+  "totals": {
+    "cc": {
+      "correct": 0,
+      "total": 2
+    },
+    "yoyo": {
+      "correct": 2,
+      "total": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "tk-003",
+      "type": "module_path",
+      "cc": {
+        "answer": "Based on the grep output, `poll_acquire` is located in `/tokio/src/sync/batch_semaphore.rs` at line 397.\n\nFrom the file path, the module path is: **`tokio::sync::batch_semaphore`**",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "wrong_fact",
+              "note": "Agent stated tokio::sync::batch_semaphore; ground truth is tokio::sync"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent incorrectly identified the module path as including batch_semaphore when the actual module is tokio::sync."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "Based on the tool output, `poll_acquire` in `tokio/src/sync/batch_semaphore.rs` belongs to the module **`tokio::sync`**.\n\nThis is shown in the `module_path` field of the match result.",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": true,
+              "confidence": "high",
+              "failure_mode": "correct",
+              "note": "Agent correctly identified tokio::sync as the full module path"
+            }
+          },
+          "overall": {
+            "correct_count": 1,
+            "total": 1,
+            "summary": "Agent correctly identified the module path as tokio::sync with clear justification."
+          }
+        }
+      }
+    },
+    {
+      "id": "tk-014",
+      "type": "module_path",
+      "cc": {
+        "answer": "Based on the grep output, `spawn_blocking` in `tokio/src/runtime/blocking/pool.rs` belongs to the **`tokio::runtime::blocking::pool`** module.\n\nThis can be determined from the file path: `/tokio/src/runtime/blocking/pool.rs`, which corresponds to the module hierarchy `tokio::runtime::blocking::pool`.",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": false,
+              "confidence": "high",
+              "failure_mode": "wrong_fact",
+              "note": "Agent stated tokio::runtime::blocking::pool; ground truth is tokio::runtime::blocking"
+            }
+          },
+          "overall": {
+            "correct_count": 0,
+            "total": 1,
+            "summary": "Agent incorrectly identified the module as including 'pool' in the path when it should only be tokio::runtime::blocking."
+          }
+        }
+      },
+      "yoyo": {
+        "answer": "Based on the tool output, `spawn_blocking` in `tokio/src/runtime/blocking/pool.rs` belongs to the module **`tokio::runtime::blocking`**.\n\nThis can be seen in the `module_path` field of the matches, which shows `\"module_path\": \"tokio::runtime::blocking\"` for both the primary `spawn_blocking` function (lines 298-328) and the secondary one (lines 179-186).",
+        "score": {
+          "scores": {
+            "module_path": {
+              "correct": true,
+              "confidence": "high",
+              "failure_mode": "correct",
+              "note": "Answer explicitly states tokio::runtime::blocking, matches ground truth exactly"
+            }
+          },
+          "overall": {
+            "correct_count": 1,
+            "total": 1,
+            "summary": "Agent correctly identified the module path as tokio::runtime::blocking with supporting evidence."
+          }
+        }
+      }
+    }
+  ]
+}
