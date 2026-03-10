@@ -473,6 +473,10 @@ pub async fn run(command: Option<Command>) -> anyhow::Result<()> {
     Ok(())
 }
 
+pub async fn run_slash_command(args: Vec<String>) -> anyhow::Result<()> {
+    crate::sdd::run_slash_command(args)
+}
+
 async fn run_llm_instructions(args: LlmInstructionsArgs) -> anyhow::Result<()> {
     let json = crate::engine::llm_instructions(args.path)?;
     println!("{json}");

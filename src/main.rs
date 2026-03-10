@@ -2,6 +2,7 @@ mod cli;
 mod engine;
 mod lang;
 mod mcp;
+mod sdd;
 
 use clap::Parser;
 
@@ -20,6 +21,14 @@ struct Cli {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let raw_args: Vec<String> = std::env::args().collect();
+    if let Some(first_arg) = raw_args.get(1) {
+        if first_arg.starts_with("/yoyo:") {
+            cli::run_slash_command(raw_args[1..].to_vec()).await?;
+            return Ok(());
+        }
+    }
+
     let cli = Cli::parse();
 
     if cli.mcp_server {
@@ -30,4 +39,3 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
-

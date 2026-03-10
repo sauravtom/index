@@ -143,6 +143,27 @@ You're set. Open Claude Code, Cursor, or Codex CLI, start a session, and ask abo
 
 ---
 
+## Spec-Driven Development (SDD)
+
+yoyo also supports lightweight SDD workflows via slash-style commands:
+
+```bash
+yoyo /yoyo:propose add-dark-mode
+yoyo /yoyo:apply
+yoyo /yoyo:archive
+yoyo /yoyo:status
+```
+
+What each command does:
+- `/yoyo:propose <name>` creates `yoyo/changes/<name>/` with `proposal.md`, `design.md`, `tasks.md`, and `specs/requirements.md`.
+- `/yoyo:apply [name]` marks pending checklist items in `tasks.md` as complete and prints task progress.
+- `/yoyo:archive [name]` moves the change to `yoyo/changes/archive/<date>-<name>/` and syncs specs into `yoyo/specs/`.
+- `/yoyo:status` (or `/yoyo:show`) prints summary stats and per-change progress bars.
+
+If `[name]` is omitted for apply/archive, yoyo uses the first active change in `yoyo/changes/`.
+
+---
+
 ## Tools
 
 ### Bootstrap
