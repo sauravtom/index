@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-034236",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.2",
+  "tokenwise_version": "0.16.2",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 20,
@@ -10,7 +10,7 @@
       "correct": 15,
       "total": 36
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 27,
       "total": 34
     }
@@ -43,7 +43,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "The primary definition of `search_path` in `crates/core/search.rs` is at **line 380** (spanning lines 380-412).",
         "score": {
           "scores": {
@@ -101,7 +101,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search_path` function in `crates/core/search.rs` is **private**.\n\nBoth matches show `\"visibility\": \"private\"` in their definitions (lines 380-412 and lines 342-351).",
         "score": {
           "scores": {
@@ -147,7 +147,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search_path` function in `crates/core/search.rs` belongs to the module **`crates::core`**.\n\nBoth matches in the output show the same `module_path` value of `\"crates::core\"`.",
         "score": {
           "scores": {
@@ -187,7 +187,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Looking at the primary `search_path` function (lines 380-412), I need to count the project-defined functions it calls.\n\nFrom the `calls` list for the primary function, the callees are:\n1. `clone` - built-in method\n2. `clone` - built-in method\n3. `has_match` - project-defined\n4. `map` - built-in method\n5. `search_path` - project-defined\n6. `sink_with_path` - project-defined\n7. `stats` - project-defined\n\nThe project-defined functions called are:\n1. `has_match`\n2. `search_path`\n3. `sink_with_path`\n4. `stats`\n\n**The primary `search_path` function calls 4 project-defined functions.**",
         "score": {
           "scores": {
@@ -233,7 +233,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, **1 function** directly calls `search_path` in ripgrep.\n\nThe `callers` array shows that `search_path` is called by:\n- `search_path` itself (with complexity 2, depth 1, in crates/core/search.rs)\n\nHowever, if you're asking about distinct caller functions (excluding recursive calls), then the answer would be that `search_path` appears to be called by the `search` function and potentially others, but the tool output specifically shows `search_path` as having 1 direct caller entry in the callers list.\n\nTo be most precise: according to the tool output, there is **1 caller entry for `search_path`** listed in the callers array.",
         "score": {
           "scores": {
@@ -291,7 +291,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the function with the highest complexity score in ripgrep is:\n\n**Function name:** `from_low_args`\n**File:** `crates/core/flags/hiargs.rs`\n**Complexity:** 17\n**Score:** 493",
         "score": {
           "scores": {
@@ -349,7 +349,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` is defined in **crates/core/flags/hiargs.rs** at **line 113** (this is the primary definition, as indicated by `\"primary\": true`).\n\nThere are also additional overloaded or related versions of `from_low_args` defined in the same file at lines 980, 1071, and 1159, but the main function starts at line 113.",
         "score": {
           "scores": {
@@ -407,7 +407,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` has **module visibility** in ripgrep.\n\nThe primary match shows:\n- `\"visibility\": \"module\"` (at line 113-322 in `crates/core/flags/hiargs.rs`)\n\nThis indicates that `from_low_args` is **module-level** (typically `pub(crate)` in Rust), meaning it is accessible within the crate but not exposed publicly outside of it.\n\nThe other three matches with `\"visibility\": \"private\"` appear to be overloaded versions of the function with restricted visibility within the module.",
         "score": {
           "scores": {
@@ -453,7 +453,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Looking at the primary `from_low_args` function (the one at lines 113-322 with `\"primary\": true`), I need to count the calls to project-defined functions (excluding standard library and external crate methods).\n\nFrom the `calls` array for the primary function, the project-defined function calls are:\n\n1. `from_low_args` (Patterns) - line 143\n2. `from_low_args` (Paths) - line 144\n3. `from_low_args` (BinaryDetection) - line 146\n4. `new` (State) - line 142\n5. `globs` - line 151\n6. `preprocessor_globs` - line 152\n7. `stats` - line 149\n8. `take_color_specs` - line 147\n9. `take_hyperlink_config` - line 148\n10. `types` - line 150\n\nThe other calls in the list are to external crate methods (`grep::searcher::MmapChoice`, standard methods like `clone`, `get`, `into_bytes`, `is_file`, `is_none`, `is_only_stdin`, `len`, `supported`) which are not project-defined.\n\n**The primary `from_low_args` function calls 10 project-defined functions.**",
         "score": {
           "scores": {
@@ -499,7 +499,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is defined in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 1731-1801 (function spans from line 1731 to line 1801)",
         "score": {
           "scores": {
@@ -545,7 +545,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is **private** in ripgrep.\n\nThe output shows `\"visibility\": \"private\"` for the `generate_work` function located in `crates/ignore/src/walk.rs`.",
         "score": {
           "scores": {
@@ -585,7 +585,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, I need to count the calls to project-defined functions (excluding standard library methods and external crate methods).\n\nLooking at the `calls` list for `generate_work`, the project-defined functions are:\n\n1. `check_symlink_loop` (line 1762)\n2. `from_entry` (line 1746) - qualifier: `DirEntryRaw`\n3. `from_path` (line 1755) - qualifier: `DirEntryRaw`\n4. `new_raw` (line 1747) - qualifier: `DirEntry`\n5. `path_equals` (line 1773)\n6. `should_skip_entry` (line 1769)\n7. `skip_filesize` (line 1783)\n8. `visit` (line 1741) - qualifier: `self\\n                    .visitor`\n9. `visit` (line 1749) - qualifier: `self.visitor`\n\nThe other calls like `clone`, `file_type`, `from`, `is_dir`, `is_symlink`, `metadata`, `path`, `send`, and `with_depth` are standard library or trait methods.\n\n**`generate_work` calls 9 project-defined functions.**",
         "score": {
           "scores": {
@@ -631,7 +631,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `build` function defined in the walk module is located in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 565-618\n\nThis is the primary match in the results (marked with `\"primary\": true`), and it has a complexity of 6 with public visibility.",
         "score": {
           "scores": {
@@ -677,7 +677,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `build` function in `crates/ignore/src/walk.rs` (at lines 565-618) is **public**.\n\nThis can be seen from the match result which shows:\n- `\"visibility\": \"public\"`",
         "score": {
           "scores": {
@@ -717,7 +717,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Looking at the tool output, the primary public `build` function is located at lines 565-618 in `crates/ignore/src/walk.rs`.\n\nExamining its `calls` list, I need to count the calls to project-defined functions (excluding standard library methods like `clone()`, `map()`, `file_name()`, `path()`, `new()` on standard types, etc.).\n\nThe project-defined functions called are:\n\n1. `build` (on `self.ig_builder`, line 608)\n2. `build_with_cwd` (on `self.ig_builder`, line 607)\n3. `get_or_set_current_dir` (on `self`, line 605)\n4. `from` (on `WalkEventIter`, line 600)\n5. `follow_links` (on `wd`, line 578)\n6. `same_file_system` (on `wd`, line 579)\n7. `max_depth` (on `wd`, line 581)\n8. `min_depth` (on `wd`, line 584)\n\nThe public `build` function calls **8 project-defined functions**.",
         "score": {
           "scores": {
@@ -769,7 +769,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, there are multiple definitions of `is_match` in `crates/globset/src/lib.rs`. Here are the line numbers:\n\n1. **Line 860-875** (primary definition with complexity 5)\n2. Line 800-808\n3. Line 832-840\n4. Line 665-676\n5. Line 736-741\n6. Line 770-775\n7. **Line 342-344** (public definition with complexity 1)\n8. Line 708-710\n9. Line 915-917\n\nThe primary definition appears to be at **lines 860-875**, and there is also a public-facing definition at **lines 342-344**. The other definitions are private helper methods for different matching scenarios.",
         "score": {
           "scores": {
@@ -821,7 +821,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` belongs to the **`crates::ignore::src`** module in ripgrep.\n\nMore specifically, it is defined in the file `crates/ignore/src/walk.rs` at lines 1731-1801.",
         "score": {
           "scores": {
@@ -861,7 +861,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the ripgrep codebase has **131 dead (uncalled) functions** identified by static analysis.\n\nThis count comes from the \"dead_code\" array in the health report, which lists each unused function with its location, line numbers, and size.",
         "score": {
           "scores": {
@@ -907,7 +907,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the top 2 god functions (most complex) in ripgrep are:\n\n1. **`from_low_args`** in `crates/core/flags/hiargs.rs` (score: 493)\n2. **`generate_work`** in `crates/ignore/src/walk.rs` (score: 336)",
         "score": {
           "scores": {
@@ -971,7 +971,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search` function is defined in `crates/core/search.rs` at **line 245** (starting line). It spans from line 245 to line 267.",
         "score": {
           "scores": {

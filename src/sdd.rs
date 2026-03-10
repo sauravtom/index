@@ -3,40 +3,110 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+const CURRENT_NAMESPACE: &str = "tokenwise";
+const LEGACY_NAMESPACE: &str = "yoyo";
+
 pub(crate) fn run_slash_command(args: Vec<String>) -> Result<()> {
     if args.is_empty() {
-        bail!("No slash command provided. Try /yoyo:propose <change-name>.");
+        bail!("No slash command provided. Try /tw:propose <change-name>.");
     }
 
-    let command = args[0].trim();
+    let raw_command = args[0].trim();
+    if raw_command.starts_with("/yoyo:") {
+        eprintln!(
+            "[deprecated] `/yoyo:*` is deprecated. Use `/tw:*` (for example, `/tw:propose`)."
+        );
+    }
+    let command = normalize_slash_command(raw_command);
     let rest = &args[1..];
     let root = std::env::current_dir().context("Failed to determine current directory")?;
 
-    match command {
-        "/yoyo:propose" => propose_change(&root, rest),
-        "/yoyo:apply" => apply_change(&root, rest),
-        "/yoyo:archive" => archive_change(&root, rest),
-        "/yoyo:status" | "/yoyo:show" => show_status(&root),
+    match command.as_str() {
+        "/tw:propose" => propose_change(&root, rest),
+        "/tw:apply" => apply_change(&root, rest),
+        "/tw:archive" => archive_change(&root, rest),
+        "/tw:status" | "/tw:show" => show_status(&root),
         _ => bail!(
-            "Unknown slash command: {command}. Supported: /yoyo:propose, /yoyo:apply, /yoyo:archive, /yoyo:status"
+            "Unknown slash command: {command}. Supported: /tw:propose, /tw:apply, /tw:archive, /tw:status"
         ),
     }
+}
+
+fn normalize_slash_command(raw: &str) -> String {
+    if let Some(rest) = raw.strip_prefix("/yoyo:") {
+        return format!("/tw:{rest}");
+    }
+    raw.to_string()
+}
+
+fn current_namespace_root(root: &Path) -> PathBuf {
+    root.join(CURRENT_NAMESPACE)
+}
+
+fn legacy_namespace_root(root: &Path) -> PathBuf {
+    root.join(LEGACY_NAMESPACE)
+}
+
+fn current_changes_root(root: &Path) -> PathBuf {
+    current_namespace_root(root).join("changes")
+}
+
+fn legacy_changes_root(root: &Path) -> PathBuf {
+    legacy_namespace_root(root).join("changes")
+}
+
+fn current_specs_root(root: &Path) -> PathBuf {
+    current_namespace_root(root).join("specs")
+}
+
+fn legacy_specs_root(root: &Path) -> PathBuf {
+    legacy_namespace_root(root).join("specs")
+}
+
+fn resolve_change_dir(root: &Path, slug: &str) -> Option<PathBuf> {
+    let current = current_changes_root(root).join(slug);
+    if current.is_dir() {
+        return Some(current);
+    }
+    let legacy = legacy_changes_root(root).join(slug);
+    if legacy.is_dir() {
+        return Some(legacy);
+    }
+    None
+}
+
+fn list_change_dirs_under(changes_root: &Path) -> Result<Vec<PathBuf>> {
+    let mut dirs: Vec<PathBuf> = list_dirs(changes_root)?
+        .into_iter()
+        .filter(|p| p.file_name().and_then(|v| v.to_str()) != Some("archive"))
+        .collect();
+    dirs.sort();
+    Ok(dirs)
+}
+
+fn list_archived_changes(root: &Path) -> Result<Vec<PathBuf>> {
+    let mut dirs = Vec::new();
+    dirs.extend(list_dirs(&current_changes_root(root).join("archive"))?);
+    dirs.extend(list_dirs(&legacy_changes_root(root).join("archive"))?);
+    Ok(dirs)
 }
 
 fn propose_change(root: &Path, rest: &[String]) -> Result<()> {
     let raw_name = rest
         .first()
-        .ok_or_else(|| anyhow!("Usage: /yoyo:propose <change-name>"))?;
+        .ok_or_else(|| anyhow!("Usage: /tw:propose <change-name>"))?;
     let slug = slugify(raw_name);
     if slug.is_empty() {
-        bail!("Change name is empty after normalization. Use letters/numbers (e.g. add-dark-mode).");
+        bail!(
+            "Change name is empty after normalization. Use letters/numbers (e.g. add-dark-mode)."
+        );
     }
 
-    let changes_root = root.join("yoyo").join("changes");
+    let changes_root = current_changes_root(root);
     let change_dir = changes_root.join(&slug);
     let specs_dir = change_dir.join("specs");
 
-    if change_dir.exists() {
+    if resolve_change_dir(root, &slug).is_some() {
         bail!("Change already exists: {}", rel(root, &change_dir));
     }
 
@@ -70,16 +140,20 @@ fn propose_change(root: &Path, rest: &[String]) -> Result<()> {
 fn apply_change(root: &Path, rest: &[String]) -> Result<()> {
     let active = list_active_changes(root)?;
     if active.is_empty() {
-        bail!("No active changes found under yoyo/changes/. Create one with /yoyo:propose.");
+        bail!(
+            "No active changes found under tokenwise/changes/ (or legacy yoyo/changes/). Create one with /tw:propose."
+        );
     }
 
     let target = if let Some(name) = rest.first() {
         let slug = slugify(name);
-        let selected = root.join("yoyo").join("changes").join(slug);
-        if !selected.exists() || !selected.is_dir() {
-            bail!("Active change not found: {}", rel(root, &selected));
-        }
-        selected
+        resolve_change_dir(root, &slug).ok_or_else(|| {
+            anyhow!(
+                "Active change not found: {} or {}",
+                rel(root, &current_changes_root(root).join(&slug)),
+                rel(root, &legacy_changes_root(root).join(&slug)),
+            )
+        })?
     } else {
         active[0].clone()
     };
@@ -111,16 +185,18 @@ fn apply_change(root: &Path, rest: &[String]) -> Result<()> {
 fn archive_change(root: &Path, rest: &[String]) -> Result<()> {
     let active = list_active_changes(root)?;
     if active.is_empty() {
-        bail!("No active changes found under yoyo/changes/.");
+        bail!("No active changes found under tokenwise/changes/ (or legacy yoyo/changes/).");
     }
 
     let target = if let Some(name) = rest.first() {
         let slug = slugify(name);
-        let selected = root.join("yoyo").join("changes").join(slug);
-        if !selected.exists() || !selected.is_dir() {
-            bail!("Active change not found: {}", rel(root, &selected));
-        }
-        selected
+        resolve_change_dir(root, &slug).ok_or_else(|| {
+            anyhow!(
+                "Active change not found: {} or {}",
+                rel(root, &current_changes_root(root).join(&slug)),
+                rel(root, &legacy_changes_root(root).join(&slug)),
+            )
+        })?
     } else {
         active[0].clone()
     };
@@ -130,7 +206,7 @@ fn archive_change(root: &Path, rest: &[String]) -> Result<()> {
         .and_then(|v| v.to_str())
         .ok_or_else(|| anyhow!("Invalid change folder name"))?;
     let date = current_date_yyyy_mm_dd();
-    let archive_root = root.join("yoyo").join("changes").join("archive");
+    let archive_root = current_changes_root(root).join("archive");
     fs::create_dir_all(&archive_root).context("Failed creating archive directory")?;
     let archived_dir = archive_root.join(format!("{date}-{slug}"));
 
@@ -155,16 +231,22 @@ fn archive_change(root: &Path, rest: &[String]) -> Result<()> {
 
 fn show_status(root: &Path) -> Result<()> {
     let active = list_active_changes(root)?;
-    let archived_root = root.join("yoyo").join("changes").join("archive");
-    let mut archived = list_dirs(&archived_root)?;
+    let mut archived = list_archived_changes(root)?;
     archived.sort();
     let completed_count = archived.len();
     let spec_stats = collect_spec_stats(root, &active)?;
     let (done, total) = collect_task_progress(&active)?;
-    let pct = if total == 0 { 0 } else { ((done as f64 / total as f64) * 100.0).round() as u32 };
+    let pct = if total == 0 {
+        0
+    } else {
+        ((done as f64 / total as f64) * 100.0).round() as u32
+    };
 
     println!("Summary:");
-    println!("  - Specifications: {} specs, {} requirements", spec_stats.spec_files, spec_stats.requirements);
+    println!(
+        "  - Specifications: {} specs, {} requirements",
+        spec_stats.spec_files, spec_stats.requirements
+    );
     println!("  - Active Changes: {} in progress", active.len());
     println!("  - Completed Changes: {}", completed_count);
     println!("  - Task Progress: {done}/{total} ({pct}% complete)");
@@ -175,9 +257,16 @@ fn show_status(root: &Path) -> Result<()> {
         println!("  (none)");
     } else {
         for change in &active {
-            let name = change.file_name().and_then(|v| v.to_str()).unwrap_or("unknown");
+            let name = change
+                .file_name()
+                .and_then(|v| v.to_str())
+                .unwrap_or("unknown");
             let (d, t) = task_progress_for_change(change)?;
-            let p = if t == 0 { 0 } else { ((d as f64 / t as f64) * 100.0).round() as u32 };
+            let p = if t == 0 {
+                0
+            } else {
+                ((d as f64 / t as f64) * 100.0).round() as u32
+            };
             println!("  - {:<32} [{}] {}%", name, progress_bar(p, 24), p);
         }
     }
@@ -189,7 +278,10 @@ fn show_status(root: &Path) -> Result<()> {
         println!("  (none)");
     } else {
         for item in archived.iter().rev().take(10) {
-            let name = item.file_name().and_then(|v| v.to_str()).unwrap_or("unknown");
+            let name = item
+                .file_name()
+                .and_then(|v| v.to_str())
+                .unwrap_or("unknown");
             println!("  ✓ {name}");
         }
     }
@@ -209,12 +301,9 @@ fn show_status(root: &Path) -> Result<()> {
 }
 
 fn list_active_changes(root: &Path) -> Result<Vec<PathBuf>> {
-    let changes_root = root.join("yoyo").join("changes");
-    let mut dirs: Vec<PathBuf> = list_dirs(&changes_root)?
-        .into_iter()
-        .filter(|p| p.file_name().and_then(|v| v.to_str()) != Some("archive"))
-        .collect();
-    dirs.sort();
+    let mut dirs: Vec<PathBuf> = Vec::new();
+    dirs.extend(list_change_dirs_under(&current_changes_root(root))?);
+    dirs.extend(list_change_dirs_under(&legacy_changes_root(root))?);
     Ok(dirs)
 }
 
@@ -254,7 +343,10 @@ fn task_progress_for_change(change: &Path) -> Result<(usize, usize)> {
     let mut total = 0usize;
     for line in content.lines() {
         let trimmed = line.trim();
-        if trimmed.starts_with("- [ ] ") || trimmed.starts_with("- [x] ") || trimmed.starts_with("- [X] ") {
+        if trimmed.starts_with("- [ ] ")
+            || trimmed.starts_with("- [x] ")
+            || trimmed.starts_with("- [X] ")
+        {
             total += 1;
             if trimmed.starts_with("- [x] ") || trimmed.starts_with("- [X] ") {
                 done += 1;
@@ -266,11 +358,12 @@ fn task_progress_for_change(change: &Path) -> Result<(usize, usize)> {
 
 fn collect_spec_stats(root: &Path, active_changes: &[PathBuf]) -> Result<SpecStats> {
     let mut stats = SpecStats::default();
-    let root_specs = root.join("yoyo").join("specs");
-    if root_specs.exists() {
-        for path in list_markdown_files(&root_specs)? {
-            stats.spec_files += 1;
-            stats.requirements += count_requirement_lines(&path)?;
+    for root_specs in [current_specs_root(root), legacy_specs_root(root)] {
+        if root_specs.exists() {
+            for path in list_markdown_files(&root_specs)? {
+                stats.spec_files += 1;
+                stats.requirements += count_requirement_lines(&path)?;
+            }
         }
     }
 
@@ -287,23 +380,30 @@ fn collect_spec_stats(root: &Path, active_changes: &[PathBuf]) -> Result<SpecSta
     Ok(stats)
 }
 
-fn list_spec_files_with_counts(root: &Path, active_changes: &[PathBuf]) -> Result<Vec<(String, usize)>> {
+fn list_spec_files_with_counts(
+    root: &Path,
+    active_changes: &[PathBuf],
+) -> Result<Vec<(String, usize)>> {
     let mut specs = Vec::new();
 
-    let root_specs = root.join("yoyo").join("specs");
-    if root_specs.exists() {
-        for path in list_markdown_files(&root_specs)? {
-            let name = path
-                .file_stem()
-                .and_then(|v| v.to_str())
-                .unwrap_or("unknown")
-                .to_string();
-            specs.push((name, count_requirement_lines(&path)?));
+    for root_specs in [current_specs_root(root), legacy_specs_root(root)] {
+        if root_specs.exists() {
+            for path in list_markdown_files(&root_specs)? {
+                let name = path
+                    .file_stem()
+                    .and_then(|v| v.to_str())
+                    .unwrap_or("unknown")
+                    .to_string();
+                specs.push((name, count_requirement_lines(&path)?));
+            }
         }
     }
 
     for change in active_changes {
-        let change_name = change.file_name().and_then(|v| v.to_str()).unwrap_or("change");
+        let change_name = change
+            .file_name()
+            .and_then(|v| v.to_str())
+            .unwrap_or("change");
         let spec_dir = change.join("specs");
         if spec_dir.exists() {
             for path in list_markdown_files(&spec_dir)? {
@@ -351,7 +451,7 @@ fn sync_specs_into_catalog(root: &Path, archived_dir: &Path, slug: &str) -> Resu
         return Ok(());
     }
     let content = fs::read_to_string(&source)?;
-    let target_dir = root.join("yoyo").join("specs");
+    let target_dir = current_specs_root(root);
     fs::create_dir_all(&target_dir)?;
     let target_file = target_dir.join(format!("{slug}.md"));
     fs::write(&target_file, content)?;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-yoyo write eval harness — compares CC write tools vs yoyo write tools.
+tokenwise write eval harness — compares CC write tools vs tokenwise write tools.
 
 Unlike the read eval (LLM judge), write correctness is mostly programmatic:
   - word-boundary safety  (grep for corrupted partials)
@@ -25,7 +25,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
-YOYO = Path.home() / ".local/bin/yoyo"
+TOKENWISE = Path.home() / ".local/bin/tokenwise"
 
 PASS = "✓"
 FAIL = "✗"
@@ -38,13 +38,13 @@ def run(cmd: list[str], cwd: str | None = None, timeout: int = 60) -> tuple[int,
 
 def copy_codebase(src: str) -> str:
     """Copy codebase to a temp dir and return the path."""
-    tmp = tempfile.mkdtemp(prefix="yoyo_write_eval_")
+    tmp = tempfile.mkdtemp(prefix="tokenwise_write_eval_")
     shutil.copytree(src, tmp, dirs_exist_ok=True)
     return tmp
 
 
 def bake(path: str):
-    run([str(YOYO), "bake", "--path", path])
+    run([str(TOKENWISE), "bake", "--path", path])
 
 
 def git_reset(path: str):
@@ -162,10 +162,10 @@ def cc_patch(path: str, name: str, file: str, comment: str) -> tuple[bool, int]:
     return True, line_num + 1  # 1-indexed
 
 
-# ── yoyo operations ───────────────────────────────────────────────────────────
+# ── tokenwise operations ───────────────────────────────────────────────────────────
 
-def yoyo_rename(path: str, old: str, new: str) -> tuple[bool, dict]:
-    code, out, err = run([str(YOYO), "graph-rename", "--path", path,
+def tokenwise_rename(path: str, old: str, new: str) -> tuple[bool, dict]:
+    code, out, err = run([str(TOKENWISE), "graph-rename", "--path", path,
                           "--name", old, "--new-name", new])
     if code != 0:
         return False, {"error": err}
@@ -175,9 +175,9 @@ def yoyo_rename(path: str, old: str, new: str) -> tuple[bool, dict]:
         return False, {"raw": out}
 
 
-def yoyo_delete(path: str, name: str) -> tuple[bool, str, dict]:
+def tokenwise_delete(path: str, name: str) -> tuple[bool, str, dict]:
     """Returns (blocked, reason, payload)."""
-    code, out, err = run([str(YOYO), "graph-delete", "--path", path, "--name", name])
+    code, out, err = run([str(TOKENWISE), "graph-delete", "--path", path, "--name", name])
     if code != 0:
         return True, err or out, {}
     try:
@@ -186,13 +186,13 @@ def yoyo_delete(path: str, name: str) -> tuple[bool, str, dict]:
         return False, "", {"raw": out}
 
 
-def yoyo_patch(path: str, name: str, file: str, comment: str) -> tuple[bool, bool]:
+def tokenwise_patch(path: str, name: str, file: str, comment: str) -> tuple[bool, bool]:
     """
     patch --symbol — no line number needed, resolves from bake index.
     Returns (needed_line_lookup=False, success).
     """
     # First get the symbol to find its start_line, then prepend comment before it
-    code, out, _ = run([str(YOYO), "symbol", "--path", path,
+    code, out, _ = run([str(TOKENWISE), "symbol", "--path", path,
                         "--name", name, "--file", file])
     if code != 0:
         return False, False
@@ -211,7 +211,7 @@ def yoyo_patch(path: str, name: str, file: str, comment: str) -> tuple[bool, boo
     except Exception:
         return False, False
 
-    code, _, err = run([str(YOYO), "patch", "--path", path,
+    code, _, err = run([str(TOKENWISE), "patch", "--path", path,
                         "--symbol", name,
                         "--new-content", new_content])
     return False, code == 0  # needed_line_lookup=False
@@ -223,7 +223,7 @@ def run_rw001(task: dict, src: str, compile_enabled: bool) -> dict:
     """Rename private fn — scope check."""
     op = task["operation"]
     gt = task["ground_truth"]
-    results = {"id": task["id"], "cc": [], "yoyo": []}
+    results = {"id": task["id"], "cc": [], "tokenwise": []}
 
     print(f"\n  ── CC ──")
     path = copy_codebase(src)
@@ -244,23 +244,23 @@ def run_rw001(task: dict, src: str, compile_enabled: bool) -> dict:
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
-    print(f"  ── yoyo ──")
+    print(f"  ── tokenwise ──")
     path = copy_codebase(src)
     try:
         bake(path)
-        ok, payload = yoyo_rename(path, op["old_name"], op["new_name"])
+        ok, payload = tokenwise_rename(path, op["old_name"], op["new_name"])
         fc = payload.get("files_changed", -1)
         scope = payload.get("scope", "?")
-        results["yoyo"].append(check("rename succeeded", ok, payload.get("error", "")))
-        results["yoyo"].append(check("files changed",
+        results["tokenwise"].append(check("rename succeeded", ok, payload.get("error", "")))
+        results["tokenwise"].append(check("files changed",
             fc == gt["files_changed"],
             f"changed {fc}, expected {gt['files_changed']}"))
-        results["yoyo"].append(check("scope: file-only",
+        results["tokenwise"].append(check("scope: file-only",
             scope == gt["scope"],
             f"scope={scope}"))
         if compile_enabled and ok:
             c_ok, _ = compile_check(path)
-            results["yoyo"].append(check("compiles", c_ok))
+            results["tokenwise"].append(check("compiles", c_ok))
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
@@ -271,7 +271,7 @@ def run_rw002(task: dict, src: str, compile_enabled: bool) -> dict:
     """Rename is_match → is_hit — word-boundary safety."""
     op = task["operation"]
     gt = task["ground_truth"]
-    results = {"id": task["id"], "cc": [], "yoyo": []}
+    results = {"id": task["id"], "cc": [], "tokenwise": []}
 
     def check_partials(path: str) -> list[str]:
         """Return partial-match names that were corrupted."""
@@ -297,18 +297,18 @@ def run_rw002(task: dict, src: str, compile_enabled: bool) -> dict:
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
-    print(f"  ── yoyo ──")
+    print(f"  ── tokenwise ──")
     path = copy_codebase(src)
     try:
         bake(path)
-        ok, payload = yoyo_rename(path, op["old_name"], op["new_name"])
+        ok, payload = tokenwise_rename(path, op["old_name"], op["new_name"])
         corrupted = check_partials(path)
-        results["yoyo"].append(check("rename succeeded", ok))
-        results["yoyo"].append(check("word-boundary safe",
+        results["tokenwise"].append(check("rename succeeded", ok))
+        results["tokenwise"].append(check("word-boundary safe",
             len(corrupted) == 0,
             f"corrupted: {corrupted}" if corrupted else "clean"))
-        results["yoyo"].append(check("partial matches preserved",
-            not gt["yoyo_corrupts_partials"],
+        results["tokenwise"].append(check("partial matches preserved",
+            not gt["tokenwise_corrupts_partials"],
             "is_match_candidate, is_match_at untouched"))
     finally:
         shutil.rmtree(path, ignore_errors=True)
@@ -320,7 +320,7 @@ def run_rw003(task: dict, src: str, compile_enabled: bool) -> dict:
     """Delete fn with callers — safety gate."""
     op = task["operation"]
     gt = task["ground_truth"]
-    results = {"id": task["id"], "cc": [], "yoyo": []}
+    results = {"id": task["id"], "cc": [], "tokenwise": []}
 
     print(f"  ── CC ──")
     path = copy_codebase(src)
@@ -336,15 +336,15 @@ def run_rw003(task: dict, src: str, compile_enabled: bool) -> dict:
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
-    print(f"  ── yoyo ──")
+    print(f"  ── tokenwise ──")
     path = copy_codebase(src)
     try:
         bake(path)
-        blocked, reason, payload = yoyo_delete(path, op["name"])
-        results["yoyo"].append(check("preflight blocked",
-            blocked == gt["yoyo_blocks"],
+        blocked, reason, payload = tokenwise_delete(path, op["name"])
+        results["tokenwise"].append(check("preflight blocked",
+            blocked == gt["tokenwise_blocks"],
             f"blocked with: {reason[:120]}" if blocked else "not blocked"))
-        results["yoyo"].append(check("codebase unchanged",
+        results["tokenwise"].append(check("codebase unchanged",
             blocked,  # if blocked, nothing changed
             "no files modified — safe"))
     finally:
@@ -357,7 +357,7 @@ def run_rw004(task: dict, src: str, compile_enabled: bool) -> dict:
     """Delete dead function — should succeed cleanly."""
     op = task["operation"]
     gt = task["ground_truth"]
-    results = {"id": task["id"], "cc": [], "yoyo": []}
+    results = {"id": task["id"], "cc": [], "tokenwise": []}
 
     print(f"  ── CC ──")
     path = copy_codebase(src)
@@ -374,21 +374,21 @@ def run_rw004(task: dict, src: str, compile_enabled: bool) -> dict:
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
-    print(f"  ── yoyo ──")
+    print(f"  ── tokenwise ──")
     path = copy_codebase(src)
     try:
         bake(path)
-        blocked, reason, payload = yoyo_delete(path, op["name"])
-        results["yoyo"].append(check("not blocked (dead function)", not blocked,
+        blocked, reason, payload = tokenwise_delete(path, op["name"])
+        results["tokenwise"].append(check("not blocked (dead function)", not blocked,
             reason if blocked else "correctly identified as dead"))
         if not blocked:
             max_blanks = count_max_blank_run(str(Path(path) / op["file"]))
-            results["yoyo"].append(check("blank lines cleaned",
+            results["tokenwise"].append(check("blank lines cleaned",
                 max_blanks <= gt["blank_lines_after"],
                 f"max blank run: {max_blanks}"))
             if compile_enabled:
                 ok, _ = compile_check(path)
-                results["yoyo"].append(check("compiles", ok))
+                results["tokenwise"].append(check("compiles", ok))
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
@@ -396,9 +396,9 @@ def run_rw004(task: dict, src: str, compile_enabled: bool) -> dict:
 
 
 def run_rw005(task: dict, src: str, compile_enabled: bool) -> dict:
-    """Patch by symbol — CC needs line number, yoyo uses name."""
+    """Patch by symbol — CC needs line number, tokenwise uses name."""
     op = task["operation"]
-    results = {"id": task["id"], "cc": [], "yoyo": []}
+    results = {"id": task["id"], "cc": [], "tokenwise": []}
 
     print(f"  ── CC ──")
     path = copy_codebase(src)
@@ -412,13 +412,13 @@ def run_rw005(task: dict, src: str, compile_enabled: bool) -> dict:
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
-    print(f"  ── yoyo ──")
+    print(f"  ── tokenwise ──")
     path = copy_codebase(src)
     try:
         bake(path)
-        needed_lookup, success = yoyo_patch(path, op["name"], op["file"], op["insert_comment"])
-        results["yoyo"].append(check("patch applied", success))
-        results["yoyo"].append(check("no line number lookup needed",
+        needed_lookup, success = tokenwise_patch(path, op["name"], op["file"], op["insert_comment"])
+        results["tokenwise"].append(check("patch applied", success))
+        results["tokenwise"].append(check("no line number lookup needed",
             not needed_lookup,
             "symbol name sufficient — 1 tool call"))
     finally:
@@ -447,7 +447,7 @@ def run_eval(task_file: str, filter_ids: list[str] | None, compile_enabled: bool
         tasks = [t for t in tasks if t["id"] in filter_ids]
 
     all_results = []
-    cc_pass = cc_total = yoyo_pass = yoyo_total = 0
+    cc_pass = cc_total = tokenwise_pass = tokenwise_total = 0
 
     for task in tasks:
         tid = task["id"]
@@ -466,18 +466,18 @@ def run_eval(task_file: str, filter_ids: list[str] | None, compile_enabled: bool
             cc_total += 1
             if check_result["passed"]:
                 cc_pass += 1
-        for check_result in result["yoyo"]:
-            yoyo_total += 1
+        for check_result in result["tokenwise"]:
+            tokenwise_total += 1
             if check_result["passed"]:
-                yoyo_pass += 1
+                tokenwise_pass += 1
 
     print(f"\n{'═'*60}")
     print("FINAL RESULTS")
     print(f"{'═'*60}")
     cc_pct  = round(100 * cc_pass / cc_total)   if cc_total   else 0
-    yy_pct  = round(100 * yoyo_pass / yoyo_total) if yoyo_total else 0
+    yy_pct  = round(100 * tokenwise_pass / tokenwise_total) if tokenwise_total else 0
     print(f"  Claude Code: {cc_pass}/{cc_total} ({cc_pct}%)")
-    print(f"  yoyo:        {yoyo_pass}/{yoyo_total} ({yy_pct}%)")
+    print(f"  tokenwise:        {tokenwise_pass}/{tokenwise_total} ({yy_pct}%)")
 
     return {
         "run_id":      datetime.now().strftime("%Y-%m-%d-%H%M%S"),
@@ -485,7 +485,7 @@ def run_eval(task_file: str, filter_ids: list[str] | None, compile_enabled: bool
         "compile":     compile_enabled,
         "totals":      {
             "cc":   {"pass": cc_pass,   "total": cc_total},
-            "yoyo": {"pass": yoyo_pass, "total": yoyo_total},
+            "tokenwise": {"pass": tokenwise_pass, "total": tokenwise_total},
         },
         "tasks": all_results,
     }

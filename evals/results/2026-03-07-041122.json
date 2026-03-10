@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-041122",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.3",
+  "tokenwise_version": "0.16.3",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 20,
@@ -10,7 +10,7 @@
       "correct": 13,
       "total": 36
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 33,
       "total": 37
     }
@@ -37,7 +37,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the search results, the primary definition of `search_path` in `crates/core/search.rs` is located at **line 380** (spanning lines 380-412).\n\nThis is identified by the `\"primary\": true` field in the first match result.",
         "score": {
           "scores": {
@@ -83,7 +83,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search_path` function in `crates/core/search.rs` is **private**.\n\nBoth instances of `search_path` found in the search results have `\"visibility\": \"private\"` in their output.",
         "score": {
           "scores": {
@@ -123,7 +123,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search_path` function in `crates/core/search.rs` belongs to the module:\n\n**`crates::core`**\n\nThis is shown in the `module_path` field for both occurrences of `search_path` found in the file.",
         "score": {
           "scores": {
@@ -163,7 +163,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `calls` array for the primary `search_path` match in `crates/core/search.rs` has **4** entries.\n\nThis is explicitly stated in the output: `calls array length: 4`",
         "score": {
           "scores": {
@@ -215,7 +215,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the blast-radius output for `search_path`:\n\n**Distinct function names (excluding self-recursion) that directly call `search_path`:**\n\n1. `search`\n2. `search_decompress`\n\n**Count: 2**",
         "score": {
           "scores": {
@@ -279,7 +279,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, the function with the highest complexity score shown is:\n\n**Function name:** `from_low_args`\n**File:** `crates/core/flags/hiargs.rs`\n**Complexity score:** 493\n\nHowever, I should note that this answer is based only on the single result provided by the tool. To definitively answer which function has the *highest* complexity score in ripgrep, I would need the tool output showing all functions ranked by complexity score, not just this one result.",
         "score": {
           "scores": {
@@ -343,7 +343,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` is defined in **crates/core/flags/hiargs.rs** at **line 113** (the primary/main definition).\n\nThere are also additional implementations of `from_low_args` (private functions) at lines 980, 1071, and 1159 in the same file.",
         "score": {
           "scores": {
@@ -401,7 +401,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` has **mixed visibility levels** in ripgrep:\n\n1. **Public (module-level)**: The primary function at lines 113-322 in `crates/core/flags/hiargs.rs` has `visibility: \"module\"`, which indicates it is public at the module level (likely `pub` or `pub(crate)`).\n\n2. **Private**: The other three implementations (at lines 980-1048, 1071-1134, and 1159-1175) all have `visibility: \"private\"`, indicating they are private functions.\n\nThe primary/main `from_low_args` function appears to be module-level public, while there are additional private helper functions with the same name.",
         "score": {
           "scores": {
@@ -453,7 +453,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, the `calls` array for the `from_low_args` function in `crates/core/flags/hiargs.rs` contains **14** entries.",
         "score": {
           "scores": {
@@ -499,7 +499,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is defined in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 1731 (start of function definition)",
         "score": {
           "scores": {
@@ -545,7 +545,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is **private** in ripgrep.\n\nThe output shows:\n```\n\"visibility\": \"private\"\n```\n\nAdditionally, it's not a module-level function but rather a function within the `crates::ignore::src` module, located in the file `crates/ignore/src/walk.rs` at lines 1731-1801.",
         "score": {
           "scores": {
@@ -585,7 +585,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "The `calls` array for the primary `generate_work` match in `crates/ignore/src/walk.rs` has **11** entries.",
         "score": {
           "scores": {
@@ -631,7 +631,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `build` function defined in the walk module is located at:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 565-618\n\nThis is the primary match in the results, with a complexity of 6 and public visibility.",
         "score": {
           "scores": {
@@ -677,7 +677,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `build` function in `crates/ignore/src/walk.rs` (at lines 565-618) is **public**.\n\nThis is indicated by the `\"visibility\": \"public\"` field in the match result for that function.",
         "score": {
           "scores": {
@@ -717,7 +717,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "The `calls` array for the primary `build` match in `crates/ignore/src/walk.rs` has **9** entries.",
         "score": {
           "scores": {
@@ -769,7 +769,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, there are multiple definitions of `is_match` in `crates/globset/src/lib.rs`. Here are all the line numbers where `is_match` is defined:\n\n- Line 342-344 (public visibility)\n- Line 665-676 (private visibility)\n- Line 708-710 (private visibility)\n- Line 736-741 (private visibility)\n- Line 770-775 (private visibility)\n- Line 800-808 (private visibility)\n- Line 832-840 (private visibility)\n- Line 860-875 (private visibility, marked as primary)\n- Line 915-917 (private visibility)\n\nIf you're looking for the primary/main definition, it appears to be at **line 860-875** (marked as primary in the output). If you're looking for the public API definition, it's at **line 342-344**.",
         "score": {
           "scores": {
@@ -821,7 +821,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` belongs to the **`crates::ignore::src`** module in ripgrep.\n\nMore specifically, it is located in the file `crates/ignore/src/walk.rs` and is a private function defined at lines 1731-1801.",
         "score": {
           "scores": {
@@ -861,7 +861,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `dead_code` array contains **84 items**.",
         "score": {
           "scores": {
@@ -925,7 +925,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the top 2 god functions (most complex) in ripgrep are:\n\n1. **from_low_args** - located in `crates/core/flags/hiargs.rs` (score: 493)\n2. **generate_work** - located in `crates/ignore/src/walk.rs` (score: 336)",
         "score": {
           "scores": {
@@ -989,7 +989,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search` function is defined in `crates/core/search.rs` at **lines 245-267**.",
         "score": {
           "scores": {

@@ -1,6 +1,6 @@
-# yoyo Eval Report
+# tokenwise Eval Report
 
-Canonical accuracy report for yoyo's structural and semantic tools against real-world Rust codebases.
+Canonical accuracy report for tokenwise's structural and semantic tools against real-world Rust codebases.
 
 Last updated: 2026-03-07 — v0.20.4
 
@@ -43,7 +43,7 @@ Tests: top-3 embedding recall for natural language queries (fastembed AllMiniLML
 
 ### Combined
 
-| Type | yoyo | Claude Code (no index) |
+| Type | tokenwise | Claude Code (no index) |
 |---|---|---|
 | Structural (63 tasks) | **63/63 — 100%** | 20/63 — 32% |
 | Semantic (18 tasks) | **18/18 — 100%** | 0/18 — 0% |
@@ -53,7 +53,7 @@ Tests: top-3 embedding recall for natural language queries (fastembed AllMiniLML
 
 ## Question-level comparison (tokio)
 
-| Question | Claude Code | yoyo |
+| Question | Claude Code | tokenwise |
 |---|---|---|
 | Where is `poll_acquire` defined? | ✗ grep scan — multiple hits, manual filter | ✓ `batch_semaphore.rs:397` (exact) |
 | Is `poll_acquire` public/private/crate? | ✗ Must infer from raw text | ✓ `visibility: private` |
@@ -80,7 +80,7 @@ Tests: top-3 embedding recall for natural language queries (fastembed AllMiniLML
 python3 evals/run.py --tasks evals/tasks/tokio.json
 
 # Semantic (requires bake + embed first)
-yoyo bake --path /path/to/tokio
+tokenwise bake --path /path/to/tokio
 python3 evals/run_semantic.py --tasks evals/tasks/tokio_semantic.json --path /path/to/tokio
 
 # Write ops

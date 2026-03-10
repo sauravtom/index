@@ -5,11 +5,11 @@
 
 ---
 
-## Did yoyo help build this?
+## Did tokenwise help build this?
 
 Honest answer: **yes, meaningfully — but unevenly.**
 
-### Where yoyo genuinely saved time
+### Where tokenwise genuinely saved time
 
 **`symbol` with `include_source: true`** was the single most useful tool. Before touching any file, I used it to read `build_bake_index`, `search`, `api_trace`, `list_tools`, and all four `ast_search` implementations in one pass — getting source + line numbers without hunting through files. That replaced about 8-10 manual Read calls.
 
@@ -21,7 +21,7 @@ Honest answer: **yes, meaningfully — but unevenly.**
 
 **`shake`** gave a quick sanity check after the build — confirmed the new `blast_radius` function appeared in the top-10 complexity list (complexity 8), and that `collect_calls_inner` in rust.rs was also indexed.
 
-### Where yoyo fell short
+### Where tokenwise fell short
 
 **`search` is too shallow for structural work.** It's fuzzy-name-only — searching for "BakeIndex" returned 0 hits because `BakeIndex` is a struct, not a function. Had to fall back to `supersearch`. The `search` tool should handle struct/type names.
 
@@ -93,7 +93,7 @@ cli.rs:   blast-radius --symbol <name> [--depth N]
 
 ---
 
-## What yoyo is missing (discovered during this session)
+## What tokenwise is missing (discovered during this session)
 
 1. **Type/struct symbol lookup** — `symbol` only indexes functions
 2. **Import/dependency graph** — would enable file-level blast radius without call-graph noise

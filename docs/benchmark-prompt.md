@@ -1,10 +1,10 @@
 # Benchmark Prompt (reusable for any project)
 
-You are onboarding me to a new codebase. Use ONLY the yoyo MCP server.
+You are onboarding me to a new codebase. Use ONLY the tokenwise MCP server.
 Call all tools in this exact sequence, in parallel batches where possible:
 
 ## BATCH 1 (project foundation)
-- `llm_instructions(path)`       → get yoyo guidance
+- `llm_instructions(path)`       → get tokenwise guidance
 - `shake(path)`                  → language/file stats + top complex functions
 - `bake(path)`                   → build the index (required before most tools)
 

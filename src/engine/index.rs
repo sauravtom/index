@@ -22,7 +22,7 @@ pub fn llm_instructions(path: Option<String>) -> Result<String> {
         tools: tool_catalog(),
         prime_directives: vec![
             "grep, cat, and read-file are text tools. They find strings. They cannot answer structural questions about code.",
-            "For any question about visibility, module path, callers, callees, methods, fields, or trait implementations — use yoyo tools, not grep.",
+            "For any question about visibility, module path, callers, callees, methods, fields, or trait implementations — use tokenwise tools, not grep.",
             "Before adding any new function or tool, search the codebase first — it may already exist. Duplication is the first form of rot.",
             "Before writing, read. Use symbol or supersearch to understand existing code before proposing changes.",
             "Dead code is waste. Use health to identify unused functions and graph_delete to remove them.",
@@ -475,7 +475,7 @@ pub fn bake(path: Option<String>) -> Result<String> {
 
     // Build embeddings DB for semantic_search (best-effort — never fails the bake)
     if let Err(e) = crate::engine::embed::build_embeddings(&bakes_dir) {
-        eprintln!("[yoyo] Embeddings skipped: {e}");
+        eprintln!("[tokenwise] Embeddings skipped: {e}");
     }
 
     let summary = BakeSummary {

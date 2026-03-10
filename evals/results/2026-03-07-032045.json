@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-032045",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.1",
+  "tokenwise_version": "0.16.1",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 5,
@@ -10,7 +10,7 @@
       "correct": 2,
       "total": 10
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 7,
       "total": 9
     }
@@ -49,7 +49,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the search results, `search_path` is defined in multiple locations in the ripgrep codebase:\n\n1. **`crates/core/search.rs`** at **line 380** (private function)\n2. **`crates/core/search.rs`** at **line 342** (private function)\n3. **`crates/searcher/src/searcher/mod.rs`** at **line 643** (public function)\n\nThe public definition is in `crates/searcher/src/searcher/mod.rs` starting at line 643, while there are two private definitions in `crates/core/search.rs` at lines 342 and 380.",
         "score": {
           "scores": {
@@ -101,7 +101,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, there are three functions named `search_path` in the ripgrep codebase with different visibility levels:\n\n1. **`search_path` in `crates/core/search.rs` (lines 380-412)**: **private**\n2. **`search_path` in `crates/core/search.rs` (lines 342-351)**: **private**\n3. **`search_path` in `crates/searcher/src/searcher/mod.rs` (lines 643-657)**: **public**\n\nSo the answer depends on which `search_path` function you're asking about. Two are private functions in the core module, and one is a public function in the searcher module. There are no module-level (internal visibility) functions by that name shown in the results.",
         "score": {
           "scores": {
@@ -147,7 +147,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, there are multiple `search_path` functions in ripgrep across different modules:\n\n1. **`crates::core::search_path`** - A private function in the core module (appears twice with different implementations)\n2. **`crates::searcher::src::searcher::search_path`** - A public function in the searcher module\n\nThe most prominent module path is **`crates::core`** for the private implementations, and **`crates::searcher::src::searcher`** for the public implementation.\n\nIf you're asking about the primary/main `search_path` function, it would be in the **`crates::searcher`** module (the public one at `crates::searcher::src::searcher::search_path`).",
         "score": {
           "scores": {
@@ -187,7 +187,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Looking at the tool output, I need to count the unique functions called by `search_path` across all its definitions.\n\nLet me identify all the callees from the three `search_path` function definitions:\n\n**First `search_path` (lines 380-412):**\n1. Ok\n2. Some\n3. clone\n4. has_match\n5. map\n6. search_path\n7. sink_with_path\n8. stats\n\n**Second `search_path` (lines 342-351):**\n1. search_path\n\n**Third `search_path` (lines 643-657):**\n1. Some\n2. as_ref\n3. map_err\n4. open\n5. search_file_maybe_path\n\nCounting unique function names across all definitions:\n1. Ok\n2. Some\n3. clone\n4. has_match\n5. map\n6. search_path\n7. sink_with_path\n8. stats\n9. as_ref\n10. map_err\n11. open\n12. search_file_maybe_path\n\nThe exact count is **12 functions**.",
         "score": {
           "scores": {
@@ -239,7 +239,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the function with the highest complexity score in ripgrep is:\n\n**Function name:** `from_low_args`\n**File:** `crates/core/flags/hiargs.rs`\n\nThis function has a complexity score of 17 with a fan-out of 29, resulting in a total score of 493, which is the highest among all the \"god functions\" listed in the output.",
         "score": {
           "scores": {

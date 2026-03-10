@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-040530",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.3",
+  "tokenwise_version": "0.16.3",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 1,
@@ -10,7 +10,7 @@
       "correct": 0,
       "total": 2
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 3,
       "total": 3
     }
@@ -43,7 +43,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the blast-radius output for `search_path`, the distinct function names that directly call `search_path` (excluding self-recursion) are:\n\n1. **search**\n2. **search_decompress**\n\n**Count: 2**",
         "score": {
           "scores": {

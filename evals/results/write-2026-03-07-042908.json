@@ -7,7 +7,7 @@
       "pass": 8,
       "total": 11
     },
-    "yoyo": {
+    "tokenwise": {
       "pass": 12,
       "total": 12
     }
@@ -32,7 +32,7 @@
           "detail": "CC changed 1 files \u2014 no scope awareness"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "rename succeeded",
           "passed": true,
@@ -64,7 +64,7 @@
           "detail": "CC corrupted 2 partial matches as expected"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "rename succeeded",
           "passed": true,
@@ -96,7 +96,7 @@
           "detail": "deleted function body \u2014 callers will fail to compile"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "preflight blocked",
           "passed": true,
@@ -123,7 +123,7 @@
           "detail": "max blank run: 1 (CC leaves orphan blanks)"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "not blocked (dead function)",
           "passed": true,
@@ -150,7 +150,7 @@
           "detail": "CC must grep first to find the line \u2014 2 tool calls"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "patch applied",
           "passed": true,

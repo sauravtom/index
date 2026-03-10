@@ -6,7 +6,7 @@ on:
 
 jobs:
   update-formula:
-    name: Update homebrew-yoyo formula
+    name: Update homebrew-tokenwise formula
     runs-on: ubuntu-latest
     steps:
       - name: Get release version
@@ -16,21 +16,21 @@ jobs:
       - name: Compute SHA256 for macOS tarball
         id: sha_macos
         run: |
-          sha=$(curl -sL https://github.com/avirajkhare00/yoyo/releases/download/${{ github.ref_name }}/yoyo-aarch64-apple-darwin.tar.gz | shasum -a 256 | awk '{print $1}')
+          sha=$(curl -sL https://github.com/sauravtom/tokenwise/releases/download/${{ github.ref_name }}/tokenwise-aarch64-apple-darwin.tar.gz | shasum -a 256 | awk '{print $1}')
           echo "sha=$sha" >> $GITHUB_OUTPUT
 
       - name: Compute SHA256 for Linux tarball
         id: sha_linux
         run: |
-          sha=$(curl -sL https://github.com/avirajkhare00/yoyo/releases/download/${{ github.ref_name }}/yoyo-x86_64-unknown-linux-gnu.tar.gz | shasum -a 256 | awk '{print $1}')
+          sha=$(curl -sL https://github.com/sauravtom/tokenwise/releases/download/${{ github.ref_name }}/tokenwise-x86_64-unknown-linux-gnu.tar.gz | shasum -a 256 | awk '{print $1}')
           echo "sha=$sha" >> $GITHUB_OUTPUT
 
-      - name: Checkout homebrew-yoyo
+      - name: Checkout homebrew-tokenwise
         uses: actions/checkout@v4
         with:
-          repository: avirajkhare00/homebrew-yoyo
+          repository: sauravtom/homebrew-tokenwise
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          path: homebrew-yoyo
+          path: homebrew-tokenwise
 
       - name: Update formula
         run: |
@@ -38,15 +38,15 @@ jobs:
           SHA_MACOS="${{ steps.sha_macos.outputs.sha }}"
           SHA_LINUX="${{ steps.sha_linux.outputs.sha }}"
 
-          sed -i "s/version \".*\"/version \"${VERSION}\"/" homebrew-yoyo/Formula/yoyo.rb
-          sed -i "/aarch64-apple-darwin/{n;s/sha256 \".*\"/sha256 \"${SHA_MACOS}\"/}" homebrew-yoyo/Formula/yoyo.rb
-          sed -i "/x86_64-unknown-linux-gnu/{n;s/sha256 \".*\"/sha256 \"${SHA_LINUX}\"/}" homebrew-yoyo/Formula/yoyo.rb
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" homebrew-tokenwise/Formula/tokenwise.rb
+          sed -i "/aarch64-apple-darwin/{n;s/sha256 \".*\"/sha256 \"${SHA_MACOS}\"/}" homebrew-tokenwise/Formula/tokenwise.rb
+          sed -i "/x86_64-unknown-linux-gnu/{n;s/sha256 \".*\"/sha256 \"${SHA_LINUX}\"/}" homebrew-tokenwise/Formula/tokenwise.rb
 
       - name: Commit and push formula update
         run: |
-          cd homebrew-yoyo
+          cd homebrew-tokenwise
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/yoyo.rb
-          git commit -m "chore: update yoyo to v${{ steps.version.outputs.version }}"
+          git add Formula/tokenwise.rb
+          git commit -m "chore: update tokenwise to v${{ steps.version.outputs.version }}"
           git push

@@ -12,7 +12,7 @@
 
 **Tree-sitter integration is correct.** Using a proper AST parser rather than regex means `function_declaration` extraction is accurate — no false positives from string literals or comments. The `estimate_complexity` function walks the AST recursively and counts branching nodes (if/for/while/do/switch/ternary), giving a genuine cyclomatic approximation. Scores matched expectations in the benchmark (`nonMaxSuppression` = 6, most `convLayer` helpers = 1).
 
-**MCP server is spec-compliant.** The JSON-RPC 2.0 implementation in `mcp.rs` correctly handles `initialize`, `list_tools`, and `call_tool`. Tool schemas use proper JSON Schema with typed parameters. The stdio transport is correctly handled. This means yoyo works out of the box with any MCP-compliant client (Claude Code, Cursor, etc.) without configuration beyond pointing at the binary.
+**MCP server is spec-compliant.** The JSON-RPC 2.0 implementation in `mcp.rs` correctly handles `initialize`, `list_tools`, and `call_tool`. Tool schemas use proper JSON Schema with typed parameters. The stdio transport is correctly handled. This means tokenwise works out of the box with any MCP-compliant client (Claude Code, Cursor, etc.) without configuration beyond pointing at the binary.
 
 **Bake index schema is clean.** `BakeIndex` contains `files` (path + language), `ts_functions` (name + file + line range + complexity), `express_endpoints` (method + path + file + handler), and `languages`. This is a minimal, stable schema that all downstream tools can rely on. Adding new index data is straightforward without breaking existing consumers.
 
@@ -111,6 +111,6 @@ The placement heuristic scores files by path keywords (`handler`, `service`, `re
 
 ## Verdict
 
-yoyo's core pipeline (`bake` → `symbol` → `slice` → `package_summary`) delivers real value today for TypeScript/Express projects. The architecture is sound and the MCP integration is production-ready. The 30× onboarding speedup demonstrated in the benchmark is genuine.
+tokenwise's core pipeline (`bake` → `symbol` → `slice` → `package_summary`) delivers real value today for TypeScript/Express projects. The architecture is sound and the MCP integration is production-ready. The 30× onboarding speedup demonstrated in the benchmark is genuine.
 
 The three highest-leverage fixes — indexing arrow functions/class methods, expanding role inference keywords, and adding output pagination — are all small changes in `ts_index.rs` and `engine.rs` that would immediately make the tool reliable on the full range of real TypeScript codebases.

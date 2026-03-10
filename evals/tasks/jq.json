@@ -13,7 +13,7 @@
     {
       "id": "jq-002",
       "type": "complexity_rank",
-      "question": "Which function in jq has the highest cyclomatic complexity score according to yoyo?",
+      "question": "Which function in jq has the highest cyclomatic complexity score according to tokenwise?",
       "ground_truth": { "function": "yyparse", "file": "src/parser.c", "complexity": 215 }
     },
     {

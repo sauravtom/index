@@ -1,11 +1,11 @@
-# yoyo Project Memory
+# tokenwise Project Memory
 
 ## MCP Binary Location
-The MCP server uses `~/.local/bin/yoyo` (NOT `/tmp/yoyo-aarch64-apple-darwin`).
+The MCP server uses `~/.local/bin/tokenwise` (NOT `/tmp/tokenwise-aarch64-apple-darwin`).
 
 **Deploy workflow after any engine change:**
 ```
-cargo build --release && cp target/release/yoyo ~/.local/bin/yoyo && xattr -c ~/.local/bin/yoyo && codesign --force --sign - ~/.local/bin/yoyo
+cargo build --release && cp target/release/tokenwise ~/.local/bin/tokenwise && xattr -c ~/.local/bin/tokenwise && codesign --force --sign - ~/.local/bin/tokenwise
 ```
 Then restart Claude Code to reload the MCP server.
 

@@ -1,18 +1,18 @@
-# yoyo 🪀
+# tokenwise 🪀
 
-yoyo is a code intelligence MCP server. It gives your AI agent 27 tools to read and edit any codebase — grounded in the AST, not model memory.
+tokenwise is a code intelligence MCP server. It gives your AI agent 27 tools to read and edit any codebase — grounded in the AST, not model memory.
 
 **Built for agents.** Drop it into Claude Code, Cursor, or any MCP-compatible agent. The agent calls the tools. You get better answers.
 
-**99% eval accuracy** across 7 real codebases (120 tasks) vs 26% baseline (Claude Code without yoyo). No API keys. No SaaS. No telemetry.
+**99% eval accuracy** across 7 real codebases (120 tasks) vs 26% baseline (Claude Code without tokenwise). No API keys. No SaaS. No telemetry.
 
 ---
 
 ## Philosophy
 
-In yoyo tournaments, a yoyo is just a spinning disk on a string. The magic is in the combinations — string wraps, body movements, timing layered together. A single trick is fine. Fifty moves chained in sequence is something else entirely.
+In yo-yo tournaments, a yo-yo is just a spinning disk on a string. The magic is in the combinations — string wraps, body movements, timing layered together. A single trick is fine. Fifty moves chained in sequence is something else entirely.
 
-yoyo works the same way. Each tool does one thing. The combinations are what's deadly:
+tokenwise works the same way. Each tool does one thing. The combinations are what's deadly:
 
 | Combination | What it does |
 |---|---|
@@ -29,7 +29,7 @@ No single tool is the point. The orchestration is.
 ## How it works for your agent
 
 ```
-you run:   yoyo bake --path /your/project
+you run:   tokenwise bake --path /your/project
 agent gets: 27 tools — search, read, write, rename, trace, analyze
 agent uses: supersearch / symbol / flow / patch — not grep, not cat
 result:     answers from facts, not memory. no hallucinated file paths.
@@ -43,63 +43,63 @@ result:     answers from facts, not memory. no hallucinated file paths.
 
 **macOS — Homebrew (recommended)**
 ```bash
-brew tap avirajkhare00/yoyo
-brew install yoyo
+brew tap sauravtom/tokenwise
+brew install tokenwise
 ```
 
 Homebrew handles signing and PATH automatically. No `codesign`, no `sudo mv`.
 
 **macOS — manual (Apple Silicon)**
 ```bash
-curl -L https://github.com/avirajkhare00/yoyo/releases/latest/download/yoyo-aarch64-apple-darwin.tar.gz | tar xz
-sudo mv yoyo-aarch64-apple-darwin /usr/local/bin/yoyo
+curl -L https://github.com/sauravtom/tokenwise/releases/latest/download/tokenwise-aarch64-apple-darwin.tar.gz | tar xz
+sudo mv tokenwise-aarch64-apple-darwin /usr/local/bin/tokenwise
 # Required: sign the binary or macOS Gatekeeper will kill it silently (exit 137)
-codesign --force --deep --sign - /usr/local/bin/yoyo
+codesign --force --deep --sign - /usr/local/bin/tokenwise
 ```
 
 **Linux (x86_64)**
 ```bash
-curl -L https://github.com/avirajkhare00/yoyo/releases/latest/download/yoyo-x86_64-unknown-linux-gnu.tar.gz | tar xz
-sudo mv yoyo-x86_64-unknown-linux-gnu /usr/local/bin/yoyo
+curl -L https://github.com/sauravtom/tokenwise/releases/latest/download/tokenwise-x86_64-unknown-linux-gnu.tar.gz | tar xz
+sudo mv tokenwise-x86_64-unknown-linux-gnu /usr/local/bin/tokenwise
 ```
 
 Verify:
 ```bash
-yoyo --version
+tokenwise --version
 ```
 
 > **Why `/usr/local/bin`?** The MCP server must be on a path accessible to all tools and shells. Install here once — it works everywhere.
 >
-> **No sudo?** Install to `~/.local/bin/yoyo` instead, but update the `command` path in the MCP config (step 2) to match.
+> **No sudo?** Install to `~/.local/bin/tokenwise` instead, but update the `command` path in the MCP config (step 2) to match.
 
 ---
 
 ### 2. Add to your agent's MCP config
 
-**Claude Code** — add the `yoyo` block inside `mcpServers` in `~/.claude/settings.json`:
+**Claude Code** — add the `tokenwise` block inside `mcpServers` in `~/.claude/settings.json`:
 ```json
 {
   "mcpServers": {
-    "yoyo": {
+    "tokenwise": {
       "type": "stdio",
-      "command": "/usr/local/bin/yoyo",
+      "command": "/usr/local/bin/tokenwise",
       "args": ["--mcp-server"]
     }
   }
 }
 ```
 
-> If `~/.claude/settings.json` already has other MCP servers, just add the `"yoyo": { ... }` block alongside them. Don't replace the whole file.
+> If `~/.claude/settings.json` already has other MCP servers, just add the `"tokenwise": { ... }` block alongside them. Don't replace the whole file.
 
-> If you installed without `sudo` and the binary is at `~/.local/bin/yoyo`, use that path instead.
+> If you installed without `sudo` and the binary is at `~/.local/bin/tokenwise`, use that path instead.
 
 **Cursor** — add the same block to your Cursor MCP config file.
 
-**Codex CLI** — add yoyo as an MCP server from your terminal:
+**Codex CLI** — add tokenwise as an MCP server from your terminal:
 ```bash
-codex mcp add yoyo -- /usr/local/bin/yoyo --mcp-server
+codex mcp add tokenwise -- /usr/local/bin/tokenwise --mcp-server
 ```
-If you installed to `~/.local/bin/yoyo`, use that path in the command.
+If you installed to `~/.local/bin/tokenwise`, use that path in the command.
 
 Then reconnect your agent client so it picks up the new server (for Claude Code, run `/mcp` or restart the app).
 
@@ -109,14 +109,14 @@ Then reconnect your agent client so it picks up the new server (for Claude Code,
 
 Run this once per project, and again after large changes:
 ```bash
-yoyo bake --path /path/to/your/project
+tokenwise bake --path /path/to/your/project
 ```
 
 ---
 
 ### 4. Add the hook (Claude Code only — strongly recommended)
 
-Without this, Claude sees yoyo but won't prefer it over grep/cat. Add to your project's `.claude/settings.local.json`:
+Without this, Claude sees tokenwise but won't prefer it over grep/cat. Add to your project's `.claude/settings.local.json`:
 
 ```json
 {
@@ -126,7 +126,7 @@ Without this, Claude sees yoyo but won't prefer it over grep/cat. Add to your pr
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[yoyo] Use mcp__yoyo__supersearch instead of Grep. Use mcp__yoyo__symbol+include_source instead of Read. Use mcp__yoyo__slice for line ranges.'"
+            "command": "echo '[tokenwise] Use mcp__tokenwise__supersearch instead of Grep. Use mcp__tokenwise__symbol+include_source instead of Read. Use mcp__tokenwise__slice for line ranges.'"
           }
         ]
       }
@@ -135,7 +135,7 @@ Without this, Claude sees yoyo but won't prefer it over grep/cat. Add to your pr
 }
 ```
 
-This injects a reminder on every prompt so Claude actively uses yoyo tools instead of falling back to file reads and grep.
+This injects a reminder on every prompt so Claude actively uses tokenwise tools instead of falling back to file reads and grep.
 
 ---
 
@@ -145,22 +145,23 @@ You're set. Open Claude Code, Cursor, or Codex CLI, start a session, and ask abo
 
 ## Spec-Driven Development (SDD)
 
-yoyo also supports lightweight SDD workflows via slash-style commands:
+tokenwise also supports lightweight SDD workflows via slash-style commands:
 
 ```bash
-yoyo /yoyo:propose add-dark-mode
-yoyo /yoyo:apply
-yoyo /yoyo:archive
-yoyo /yoyo:status
+tokenwise /tw:propose add-dark-mode
+tokenwise /tw:apply
+tokenwise /tw:archive
+tokenwise /tw:status
 ```
 
 What each command does:
-- `/yoyo:propose <name>` creates `yoyo/changes/<name>/` with `proposal.md`, `design.md`, `tasks.md`, and `specs/requirements.md`.
-- `/yoyo:apply [name]` marks pending checklist items in `tasks.md` as complete and prints task progress.
-- `/yoyo:archive [name]` moves the change to `yoyo/changes/archive/<date>-<name>/` and syncs specs into `yoyo/specs/`.
-- `/yoyo:status` (or `/yoyo:show`) prints summary stats and per-change progress bars.
+- `/tw:propose <name>` creates `tokenwise/changes/<name>/` with `proposal.md`, `design.md`, `tasks.md`, and `specs/requirements.md`.
+- `/tw:apply [name]` marks pending checklist items in `tasks.md` as complete and prints task progress.
+- `/tw:archive [name]` moves the change to `tokenwise/changes/archive/<date>-<name>/` and syncs specs into `tokenwise/specs/`.
+- `/tw:status` (or `/tw:show`) prints summary stats and per-change progress bars.
 
-If `[name]` is omitted for apply/archive, yoyo uses the first active change in `yoyo/changes/`.
+If `[name]` is omitted for apply/archive, tokenwise uses the first active change in `tokenwise/changes/`.
+Legacy `/yoyo:*` aliases are still accepted temporarily and emit a deprecation warning.
 
 ---
 

@@ -6,9 +6,13 @@ mod sdd;
 
 use clap::Parser;
 
-/// Top-level CLI for yoyo.
+/// Top-level CLI for tokenwise.
 #[derive(Parser, Debug)]
-#[command(name = "yoyo", version, about = "yoyo – Rust code intelligence engine and MCP server")]
+#[command(
+    name = "tokenwise",
+    version,
+    about = "tokenwise – Rust code intelligence engine and MCP server"
+)]
 struct Cli {
     /// Run as MCP server instead of human CLI.
     #[arg(long)]
@@ -23,7 +27,7 @@ struct Cli {
 async fn main() -> anyhow::Result<()> {
     let raw_args: Vec<String> = std::env::args().collect();
     if let Some(first_arg) = raw_args.get(1) {
-        if first_arg.starts_with("/yoyo:") {
+        if first_arg.starts_with("/tw:") || first_arg.starts_with("/yoyo:") {
             cli::run_slash_command(raw_args[1..].to_vec()).await?;
             return Ok(());
         }

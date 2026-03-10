@@ -1,6 +1,6 @@
-# yoyo — full documentation
+# tokenwise — full documentation
 
-yoyo parses your codebase and gives Claude or Cursor 27 tools to read and edit it over MCP. Every answer comes from the AST — not model memory. No API keys, no SaaS, no telemetry.
+tokenwise parses your codebase and gives Claude or Cursor 27 tools to read and edit it over MCP. Every answer comes from the AST — not model memory. No API keys, no SaaS, no telemetry.
 
 **Eval:** 119/120 tasks correct (99%) across 7 real codebases vs 26% baseline (Claude Code without index).
 
@@ -10,7 +10,7 @@ yoyo parses your codebase and gives Claude or Cursor 27 tools to read and edit i
 
 - [Philosophy](#philosophy)
 - [How it works](#how-it-works)
-- [How Claude works with yoyo](#how-claude-works-with-yoyo)
+- [How Claude works with tokenwise](#how-claude-works-with-tokenwise)
 - [Installation](#installation)
 - [MCP setup](#mcp-setup)
 - [Tools reference](#tools-reference)
@@ -22,9 +22,9 @@ yoyo parses your codebase and gives Claude or Cursor 27 tools to read and edit i
 
 ## Philosophy
 
-In yoyo tournaments, a yoyo is just a spinning disk on a string. The magic is in the combinations — string wraps, body movements, timing layered together. A single trick is fine. Fifty moves chained in sequence is something else entirely.
+In yo-yo tournaments, a yo-yo is just a spinning disk on a string. The magic is in the combinations — string wraps, body movements, timing layered together. A single trick is fine. Fifty moves chained in sequence is something else entirely.
 
-yoyo (the tool) works the same way. Each tool does one thing cleanly. The power is in how your agent orchestrates them:
+tokenwise (the tool) works the same way. Each tool does one thing cleanly. The power is in how your agent orchestrates them:
 
 | Combination | What it does |
 |---|---|
@@ -52,15 +52,15 @@ The index is a plain JSON file (`bakes/latest/bake.json`) in your project root. 
 
 ---
 
-## How Claude works with yoyo
+## How Claude works with tokenwise
 
 Each session follows this sequence:
 
 1. **Bootstrap** — Claude loads `llm_instructions` on first contact. Returns tool list, workflows, prime directives. No file reading, no grepping.
 2. **Read** — `supersearch`, `symbol`, `slice` replace grep and cat. Structured data from the AST index, not line matches.
 3. **Understand** — `blast_radius`, `flow`, `trace_down`, `health` answer structural questions no text tool can: who calls this? what does this touch? is this dead?
-4. **Write** — `patch`, `graph_rename`, `graph_create`, `graph_add`, `graph_move`, `graph_delete` mutate code and auto-reindex. Claude does not edit files directly when a yoyo write tool applies.
-5. **Dogfood** — every session building yoyo is a yoyo session. Gaps found while building are filed as issues immediately.
+4. **Write** — `patch`, `graph_rename`, `graph_create`, `graph_add`, `graph_move`, `graph_delete` mutate code and auto-reindex. Claude does not edit files directly when a tokenwise write tool applies.
+5. **Dogfood** — every session building tokenwise is a tokenwise session. Gaps found while building are filed as issues immediately.
 
 Result: Claude answers from facts, not memory. No hallucinated file paths. No stale function names.
 
@@ -70,37 +70,37 @@ Result: Claude answers from facts, not memory. No hallucinated file paths. No st
 
 **macOS — Homebrew (recommended)**
 ```bash
-brew tap avirajkhare00/yoyo
-brew install yoyo
+brew tap sauravtom/tokenwise
+brew install tokenwise
 ```
 Homebrew handles signing and PATH. No `codesign`, no `sudo mv`.
 
 **macOS — manual (Apple Silicon)**
 ```bash
-curl -L https://github.com/avirajkhare00/yoyo/releases/latest/download/yoyo-aarch64-apple-darwin.tar.gz | tar xz
-sudo mv yoyo-aarch64-apple-darwin /usr/local/bin/yoyo
+curl -L https://github.com/sauravtom/tokenwise/releases/latest/download/tokenwise-aarch64-apple-darwin.tar.gz | tar xz
+sudo mv tokenwise-aarch64-apple-darwin /usr/local/bin/tokenwise
 # Required: sign the binary or Gatekeeper kills it silently (exit 137)
-codesign --force --deep --sign - /usr/local/bin/yoyo
+codesign --force --deep --sign - /usr/local/bin/tokenwise
 ```
 
 **Linux (x86_64)**
 ```bash
-curl -L https://github.com/avirajkhare00/yoyo/releases/latest/download/yoyo-x86_64-unknown-linux-gnu.tar.gz | tar xz
-sudo mv yoyo-x86_64-unknown-linux-gnu /usr/local/bin/yoyo
+curl -L https://github.com/sauravtom/tokenwise/releases/latest/download/tokenwise-x86_64-unknown-linux-gnu.tar.gz | tar xz
+sudo mv tokenwise-x86_64-unknown-linux-gnu /usr/local/bin/tokenwise
 ```
 
 **Build from source** (requires [Rust stable](https://rustup.rs)):
 ```bash
-git clone https://github.com/avirajkhare00/yoyo.git
-cd yoyo && cargo build --release
-sudo cp target/release/yoyo /usr/local/bin/yoyo
+git clone https://github.com/sauravtom/tokenwise.git
+cd tokenwise && cargo build --release
+sudo cp target/release/tokenwise /usr/local/bin/tokenwise
 ```
 
 **Quick start:**
 ```bash
-yoyo bake --path /path/to/your/project
-yoyo shake --path /path/to/your/project
-yoyo symbol --path /path/to/your/project --name myFunction
+tokenwise bake --path /path/to/your/project
+tokenwise shake --path /path/to/your/project
+tokenwise symbol --path /path/to/your/project --name myFunction
 ```
 
 ---
@@ -112,22 +112,22 @@ Add to `~/.claude/settings.json` (Claude Code) or your Cursor MCP config:
 ```json
 {
   "mcpServers": {
-    "yoyo": {
+    "tokenwise": {
       "type": "stdio",
-      "command": "/usr/local/bin/yoyo",
+      "command": "/usr/local/bin/tokenwise",
       "args": ["--mcp-server"]
     }
   }
 }
 ```
 
-For Codex CLI, add yoyo from your terminal:
+For Codex CLI, add tokenwise from your terminal:
 ```bash
-codex mcp add yoyo -- /usr/local/bin/yoyo --mcp-server
+codex mcp add tokenwise -- /usr/local/bin/tokenwise --mcp-server
 ```
-If you installed to `~/.local/bin/yoyo`, use that path in the command.
+If you installed to `~/.local/bin/tokenwise`, use that path in the command.
 
-**Recommended — add a `UserPromptSubmit` hook** so Claude is reminded to prefer yoyo tools on every turn. Add to your project's `.claude/settings.local.json`:
+**Recommended — add a `UserPromptSubmit` hook** so Claude is reminded to prefer tokenwise tools on every turn. Add to your project's `.claude/settings.local.json`:
 
 ```json
 {
@@ -137,7 +137,7 @@ If you installed to `~/.local/bin/yoyo`, use that path in the command.
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[yoyo] Use mcp__yoyo__supersearch instead of Grep/Bash grep. Use mcp__yoyo__symbol+include_source instead of Read. Use mcp__yoyo__slice for line ranges. yoyo tools must be loaded via ToolSearch first if not yet loaded.'"
+            "command": "echo '[tokenwise] Use mcp__tokenwise__supersearch instead of Grep/Bash grep. Use mcp__tokenwise__symbol+include_source instead of Read. Use mcp__tokenwise__slice for line ranges. tokenwise tools must be loaded via ToolSearch first if not yet loaded.'"
           }
         ]
       }
@@ -232,9 +232,9 @@ If you installed to `~/.local/bin/yoyo`, use that path in the command.
 - **`trace_down` / `flow` call chain** — Rust + Go only. TypeScript and Python not yet supported.
 - **Call graph is name-based** — `blast_radius` matches callee names without module qualification. A function named `parse` in one package matches all callers of any `parse`.
 - **C++ namespace false positives** — `namespace` blocks may appear as top-complexity entries.
-- **bake performance on large C codebases** — can time out on repos with 700+ files (tracked in [#65](https://github.com/avirajkhare00/yoyo/issues/65)).
+- **bake performance on large C codebases** — can time out on repos with 700+ files (tracked in [#65](https://github.com/sauravtom/tokenwise/issues/65)).
 
-Open issues: [github.com/avirajkhare00/yoyo/issues](https://github.com/avirajkhare00/yoyo/issues)
+Open issues: [github.com/sauravtom/tokenwise/issues](https://github.com/sauravtom/tokenwise/issues)
 
 ---
 

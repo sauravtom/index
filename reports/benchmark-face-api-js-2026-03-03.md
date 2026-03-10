@@ -2,7 +2,7 @@
 **Date:** 2026-03-03
 **Tester:** Claude Sonnet 4.6 via MCP
 **Project:** `face-api.js-master` — TypeScript ML library (386 files, TensorFlow.js)
-**yoyo version:** 0.1.0
+**tokenwise version:** 0.1.0
 
 ---
 
@@ -104,7 +104,7 @@ All 5 batches executed sequentially; Batches 1–4 used parallel tool calls.
 | `all_endpoints` | N/A | Correctly empty for non-Express project |
 | `crud_operations` | N/A | Correctly empty for non-Express project |
 
-**Overall onboarding success:** Despite the gaps, yoyo produced a complete and accurate architectural overview of face-api.js in ~30 seconds. The combination of `package_summary` + `symbol` + `slice` was the decisive value chain.
+**Overall onboarding success:** Despite the gaps, tokenwise produced a complete and accurate architectural overview of face-api.js in ~30 seconds. The combination of `package_summary` + `symbol` + `slice` was the decisive value chain.
 
 ---
 
@@ -117,4 +117,4 @@ The benchmark session produced a full onboarding document covering:
 - All public API entry points with composable task chain
 - Correct placement advice for adding a new detection pipeline step
 
-Estimated equivalent manual time: **15–20 minutes**. Actual yoyo-assisted time: **~30 seconds**.
+Estimated equivalent manual time: **15–20 minutes**. Actual tokenwise-assisted time: **~30 seconds**.

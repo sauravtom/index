@@ -64,7 +64,7 @@ pub(crate) struct LlmInstructionsPayload {
     pub(crate) prime_directives: Vec<&'static str>,
     pub(crate) concurrency_rules: Vec<&'static str>,
     pub(crate) workflows: Vec<Workflow>,
-    /// Maps natural-language questions to the correct yoyo tool.
+    /// Maps natural-language questions to the correct tokenwise tool.
     /// The wrong_tool column shows what naive agents reach for and why it fails.
     pub(crate) decision_map: Vec<DecisionEntry>,
     /// Explicit anti-patterns. Each item describes something that looks reasonable

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-040911",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.3",
+  "tokenwise_version": "0.16.3",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 3,
@@ -10,7 +10,7 @@
       "correct": 0,
       "total": 9
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 10,
       "total": 11
     }
@@ -43,7 +43,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the blast-radius output for `search_path`:\n\n**Distinct function names that directly call `search_path` (excluding self-recursion):**\n1. `search`\n2. `search_decompress`\n\n**Count:** 2",
         "score": {
           "scores": {
@@ -107,7 +107,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The tool output only shows one function (`from_low_args` in `crates/core/flags/hiargs.rs` with a complexity score of 493) and labels it as the \"top god function\" with a \"Health tool\" prefix. However, this doesn't necessarily mean it has the highest complexity score in the entire ripgrep codebase \u2014 it may just be the top result from a specific analysis or search. To definitively answer which function has the highest complexity score in ripgrep, I would need a complete ranking or analysis of all functions.",
         "score": {
           "scores": {
@@ -183,7 +183,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the top 2 god functions (most complex) in ripgrep are:\n\n1. **from_low_args** - located in `crates/core/flags/hiargs.rs` (score: 493)\n2. **generate_work** - located in `crates/ignore/src/walk.rs` (score: 336)",
         "score": {
           "scores": {

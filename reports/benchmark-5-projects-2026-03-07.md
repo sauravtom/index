@@ -1,7 +1,7 @@
-# yoyo benchmark — 5 real codebases
+# tokenwise benchmark — 5 real codebases
 **Date:** 2026-03-07
-**yoyo version:** 0.14.0
-**Methodology:** shallow clone at pinned commit → `yoyo bake` → `shake`, `health`, `architecture-map` → compare against README claims
+**tokenwise version:** 0.14.0
+**Methodology:** shallow clone at pinned commit → `tokenwise bake` → `shake`, `health`, `architecture-map` → compare against README claims
 
 ---
 
@@ -33,15 +33,15 @@
 | God functions | 10 |
 | Duplicate names | 0 |
 
-### yoyo vs README
+### tokenwise vs README
 
 **Confirms:** `matched_ignore` (complexity 17, `crates/ignore/src/dir.rs`) validates the README claim that gitignore handling is a first-class concern — it's one of the most complex functions in the codebase.
 
 **Interesting:** `from_low_args` (complexity 17) in `hiargs.rs` — the flag/argument resolution layer is as complex as the core search logic. The README doesn't mention this; the CLI interface is a significant engineering surface.
 
-**Gap found:** Architecture map returned `?` for all directories. ripgrep's Cargo workspace structure (`crates/core`, `crates/searcher`, `crates/ignore`) uses none of the web-framework keywords yoyo's role inference looks for. **yoyo's architecture_map is web-centric and fails on library/tool projects.**
+**Gap found:** Architecture map returned `?` for all directories. ripgrep's Cargo workspace structure (`crates/core`, `crates/searcher`, `crates/ignore`) uses none of the web-framework keywords tokenwise's role inference looks for. **tokenwise's architecture_map is web-centric and fails on library/tool projects.**
 
-**Dead code caveat:** 92 flagged — but ripgrep is a library crate. Public API functions are never "called" within the codebase by design; they're called by downstream consumers. yoyo's static call graph can't see external callers. False positive rate likely high here.
+**Dead code caveat:** 92 flagged — but ripgrep is a library crate. Public API functions are never "called" within the codebase by design; they're called by downstream consumers. tokenwise's static call graph can't see external callers. False positive rate likely high here.
 
 ---
 
@@ -61,13 +61,13 @@
 | God functions | 10 |
 | Duplicate names | 0 |
 
-### yoyo vs README
+### tokenwise vs README
 
 **Tension with "lightweight":** The top god function is `register` (complexity 19) in `sansio/blueprints.py` and `make_response` (complexity 14) in `app.py`. The response handling and blueprint registration system carries significant complexity. "Lightweight" describes the API surface, not the implementation depth.
 
 **Confirms "scale up to complex":** `url_for` (complexity 11) and `find_app_by_string` (complexity 11) in `cli.py` suggest non-trivial URL resolution and app discovery logic — the machinery needed to support complex applications is already present.
 
-**Endpoint detection false positives:** All 20 detected endpoints came from `tests/test_basic.py`, not from `src/flask/`. yoyo's Flask route detection correctly finds `@app.route()` patterns but can't distinguish production routes from test fixtures. A test-file filter is needed here (distinct from #30).
+**Endpoint detection false positives:** All 20 detected endpoints came from `tests/test_basic.py`, not from `src/flask/`. tokenwise's Flask route detection correctly finds `@app.route()` patterns but can't distinguish production routes from test fixtures. A test-file filter is needed here (distinct from #30).
 
 **Architecture map:** All `?`. Flask's `src/flask/sansio/` structure is not recognized.
 
@@ -89,11 +89,11 @@
 | God functions | 10 |
 | Duplicate names | 0 |
 
-### yoyo vs README
+### tokenwise vs README
 
 **Confirms the performance claim:** The two highest-complexity functions in the entire codebase are both in `tree.go` — the radix tree router. `findCaseInsensitivePathRec` (complexity 46) and `getValue` (42) are deeply optimized trie traversal algorithms. The "40x faster" claim is backed by genuinely complex routing code — this is hand-optimized, not accidental complexity.
 
-**Lowest dead code of any project (9):** Go's exported function convention (capitalized names are public API) aligns with yoyo's call-graph analysis. Go packages are more self-contained than Python/Rust library crates, so fewer false positives.
+**Lowest dead code of any project (9):** Go's exported function convention (capitalized names are public API) aligns with tokenwise's call-graph analysis. Go packages are more self-contained than Python/Rust library crates, so fewer false positives.
 
 **`handleHTTPRequest` (complexity 16):** The core dispatch function is the third most complex — expected for a framework that handles method matching, middleware chains, and 404/405 logic in one place.
 
@@ -118,9 +118,9 @@
 | God functions | 0 |
 | Duplicate names | 0 |
 
-### yoyo vs README
+### tokenwise vs README
 
-**yoyo is blind to express.** Express uses the CommonJS module pattern throughout:
+**tokenwise is blind to express.** Express uses the CommonJS module pattern throughout:
 
 ```js
 app.use = function use(fn) { ... }
@@ -128,12 +128,12 @@ exports.application = app;
 proto.route = function route(path) { ... }
 ```
 
-yoyo's JavaScript/TypeScript parser (tree-sitter) indexes `function` declarations and arrow functions assigned to `const`/`let`/`var`. It does **not** detect:
+tokenwise's JavaScript/TypeScript parser (tree-sitter) indexes `function` declarations and arrow functions assigned to `const`/`let`/`var`. It does **not** detect:
 - `exports.name = function() {}`
 - `proto.method = function() {}`
 - `obj.method = function() {}`
 
-This is a hard parser gap. Express has 40+ function definitions in `lib/application.js` alone — all invisible to yoyo. The "0 functions, 0 endpoints, 0 dead code" result is entirely a false negative.
+This is a hard parser gap. Express has 40+ function definitions in `lib/application.js` alone — all invisible to tokenwise. The "0 functions, 0 endpoints, 0 dead code" result is entirely a false negative.
 
 **Action required:** File an issue to add CommonJS method assignment patterns to the JavaScript analyzer.
 
@@ -155,7 +155,7 @@ This is a hard parser gap. Express has 40+ function definitions in `lib/applicat
 | God functions | 10 |
 | Duplicate names | 0 |
 
-### yoyo vs README
+### tokenwise vs README
 
 **Complexity matches scope:** `parse` at complexity 33 (`clap_builder/src/parser/parser.rs`) reflects the genuine complexity of a comprehensive argument parser handling subcommands, value types, validation, aliases, environment variables, and defaults simultaneously.
 
@@ -163,7 +163,7 @@ This is a hard parser gap. Express has 40+ function definitions in `lib/applicat
 
 **`push_attrs` (complexity 23)** in `clap_derive/src/item.rs` — the derive macro attribute parser. The macro layer is nearly as complex as the runtime parser.
 
-**618 files, multi-crate:** clap is a workspace with `clap_builder`, `clap_derive`, `clap_complete`, `clap_mangen`. yoyo handles this correctly — it indexes across all crates without configuration.
+**618 files, multi-crate:** clap is a workspace with `clap_builder`, `clap_derive`, `clap_complete`, `clap_mangen`. tokenwise handles this correctly — it indexes across all crates without configuration.
 
 **Dead code (134):** Highest of the 5. Large public API surface + extensive derive macro generated code = many functions never called within the codebase itself.
 
@@ -171,7 +171,7 @@ This is a hard parser gap. Express has 40+ function definitions in `lib/applicat
 
 ## Cross-project findings
 
-### What yoyo gets right
+### What tokenwise gets right
 
 | Finding | Evidence |
 |---|---|
@@ -180,7 +180,7 @@ This is a hard parser gap. Express has 40+ function definitions in `lib/applicat
 | Health signals are consistent across languages | Works on Rust, Python, Go without tuning |
 | Bake handles multi-crate Cargo workspaces | ripgrep (12 crates), clap (4 crates) indexed correctly |
 
-### What yoyo gets wrong
+### What tokenwise gets wrong
 
 | Gap | Impact | Issue |
 |---|---|---|

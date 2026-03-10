@@ -1,6 +1,6 @@
 # TODO Tracker
 
-Issues are tracked on GitHub: https://github.com/avirajkhare00/yoyo/issues
+Issues are tracked on GitHub: https://github.com/sauravtom/tokenwise/issues
 
 ---
 
@@ -17,7 +17,7 @@ Issues are tracked on GitHub: https://github.com/avirajkhare00/yoyo/issues
 | No blast radius analysis tool | v0.2.6 |
 | Go language support missing | v0.2.6 |
 | `engine.rs` monolith (1,756 lines) — split into 9 submodules under `src/engine/` | v0.3.1 |
-| Stale bake index after yoyo upgrade — auto-reindex on version change | v0.3.1 |
+| Stale bake index after tokenwise upgrade — auto-reindex on version change | v0.3.1 |
 | Stale bake index after source edits — auto-reindex when source newer than bake | v0.3.1 |
 | `llm_instructions` returned flat string — replaced with structured tool catalog + workflows | v0.3.2 |
 | `symbol`/`search` missed structs, classes, interfaces, enums — added `IndexedType` | v0.3.3 |

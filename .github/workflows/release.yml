@@ -1,4 +1,4 @@
-name: Release yoyo binary
+name: Release tokenwise binary
 
 on:
   push:
@@ -30,12 +30,12 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            binary: yoyo
-            archive: yoyo-x86_64-unknown-linux-gnu.tar.gz
+            binary: tokenwise
+            archive: tokenwise-x86_64-unknown-linux-gnu.tar.gz
           - os: macos-latest
             target: aarch64-apple-darwin
-            binary: yoyo
-            archive: yoyo-aarch64-apple-darwin.tar.gz
+            binary: tokenwise
+            archive: tokenwise-aarch64-apple-darwin.tar.gz
 
     steps:
       - name: Checkout repository

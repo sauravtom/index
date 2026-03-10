@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-035927",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.3",
+  "tokenwise_version": "0.16.3",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 5,
@@ -10,7 +10,7 @@
       "correct": 0,
       "total": 5
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 1,
       "total": 5
     }
@@ -37,7 +37,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The search for \"calls\" returned no matches (empty results array). To answer your question about the number of entries in a `calls` array within `crates/core/search.rs`, I would need the actual file content or search results that locate and display that specific array.",
         "score": {
           "scores": {
@@ -77,7 +77,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The search tool returned no matches for \"calls\", which means I cannot access the `from_low_args` function or examine the `calls` array in `crates/core/flags/hiargs.rs`. \n\nTo answer your question, I would need the tool output to actually contain the relevant code from that file showing the `calls` array definition.",
         "score": {
           "scores": {
@@ -117,7 +117,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The search results show that there are no matches for `calls` in the project. To answer your question about the number of entries in a `calls` array within the `generate_work` function in `crates/ignore/src/walk.rs`, I would need search results that actually contain matches from that file.",
         "score": {
           "scores": {
@@ -157,7 +157,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The search tool returned no matches for \"calls\" in the project, so I cannot provide information about a `calls` array or its entries in `crates/ignore/src/walk.rs`.\n\nTo answer this question accurately, I would need the actual code content from that file showing the `calls` array definition.",
         "score": {
           "scores": {
@@ -197,7 +197,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `dead_code` array contains **84 items**.",
         "score": {
           "scores": {

@@ -79,7 +79,7 @@ pub async fn run_stdio_server() -> Result<()> {
             let body = match String::from_utf8(buf) {
                 Ok(s) => s,
                 Err(err) => {
-                    eprintln!("[yoyo-mcp] Non-UTF8 JSON-RPC body: {err}");
+                    eprintln!("[tokenwise-mcp] Non-UTF8 JSON-RPC body: {err}");
                     continue;
                 }
             };
@@ -87,7 +87,7 @@ pub async fn run_stdio_server() -> Result<()> {
             let req: JsonRpcRequest = match serde_json::from_str(&body) {
                 Ok(r) => r,
                 Err(err) => {
-                    eprintln!("[yoyo-mcp] Failed to parse framed request: {err}");
+                    eprintln!("[tokenwise-mcp] Failed to parse framed request: {err}");
                     continue;
                 }
             };
@@ -111,7 +111,7 @@ pub async fn run_stdio_server() -> Result<()> {
             let req: JsonRpcRequest = match serde_json::from_str(&body) {
                 Ok(r) => r,
                 Err(err) => {
-                    eprintln!("[yoyo-mcp] Failed to parse line-delimited request: {err}");
+                    eprintln!("[tokenwise-mcp] Failed to parse line-delimited request: {err}");
                     continue;
                 }
             };
@@ -145,8 +145,8 @@ async fn handle_request(req: JsonRpcRequest) -> JsonRpcResponse {
             let result = json!({
                 "protocolVersion": protocol_version,
                 "capabilities": {"tools": {"listChanged": false}},
-                "serverInfo": {"name": "yoyo", "version": env!("CARGO_PKG_VERSION")},
-                "instructions": "You have access to yoyo, a code intelligence MCP server — 27 tools to read and edit any codebase from the AST, not model memory. \
+                "serverInfo": {"name": "tokenwise", "version": env!("CARGO_PKG_VERSION")},
+                "instructions": "You have access to tokenwise, a code intelligence MCP server — 27 tools to read and edit any codebase from the AST, not model memory. \
                     ON FIRST CONTACT: call `llm_instructions` and `bake` in parallel — do not wait for one before starting the other. \
                     `llm_instructions` returns the full tool catalog, 21 combination workflows, prime directives, and antipatterns. Read it before doing anything else. \
                     `bake` builds the index all read-indexed tools depend on. \

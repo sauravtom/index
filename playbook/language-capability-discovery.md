@@ -175,7 +175,7 @@ When a tool has a language or framework constraint:
 2. **Runtime response** — return `supported: false` with reason and alternatives when the constraint is violated. Never return empty data without explanation.
 3. **For partial support** — return what you can, attach a warning field for what you cannot. Don't refuse the whole call if some value is still possible.
 
-The goal: an agent should never be worse off for having called a yoyo tool. Either it gets useful data, or it gets a clear explanation of why it didn't and where to go next.
+The goal: an agent should never be worse off for having called a tokenwise tool. Either it gets useful data, or it gets a clear explanation of why it didn't and where to go next.
 
 ---
 

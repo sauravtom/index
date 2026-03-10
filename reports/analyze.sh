@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# yoyo project analyzer — run locally to reproduce benchmark reports
+# tokenwise project analyzer — run locally to reproduce benchmark reports
 #
 # Usage:
 #   ./reports/analyze.sh                          # analyze all pinned projects
@@ -7,13 +7,13 @@
 #   ./reports/analyze.sh --output /tmp/my-report  # custom output dir
 #   CLONE_DIR=/tmp ./reports/analyze.sh           # reuse existing clones
 #
-# Dependencies: git, yoyo (in PATH), python3
+# Dependencies: git, tokenwise (in PATH), python3
 # Bash 3.2+ compatible (macOS default shell)
 
 set -euo pipefail
 
-YOYO=${YOYO_BIN:-yoyo}
-CLONE_DIR=${CLONE_DIR:-/tmp/yoyo-bench}
+TOKENWISE=${TOKENWISE_BIN:-tokenwise}
+CLONE_DIR=${CLONE_DIR:-/tmp/tokenwise-bench}
 OUTPUT_DIR=${OUTPUT_DIR:-"$(dirname "$0")/runs/$(date +%Y-%m-%d)"}
 ONLY_PROJECT=""
 
@@ -59,7 +59,7 @@ die() { echo "[analyze] ERROR: $*" >&2; exit 1; }
 require_cmd() { command -v "$1" &>/dev/null || die "$1 not found in PATH"; }
 require_cmd git
 require_cmd python3
-require_cmd "$YOYO"
+require_cmd "$TOKENWISE"
 
 mkdir -p "$OUTPUT_DIR" "$CLONE_DIR"
 
@@ -82,7 +82,7 @@ bake_project() {
   local name=$1
   local dir="$CLONE_DIR/$name"
   log "$name: baking index ..."
-  "$YOYO" bake --path "$dir" > /dev/null
+  "$TOKENWISE" bake --path "$dir" > /dev/null
 }
 
 analyze_project() {
@@ -92,13 +92,13 @@ analyze_project() {
   mkdir -p "$out"
 
   log "$name: shake ..."
-  "$YOYO" shake --path "$dir" > "$out/shake.json"
+  "$TOKENWISE" shake --path "$dir" > "$out/shake.json"
 
   log "$name: health ..."
-  "$YOYO" health --path "$dir" > "$out/health.json"
+  "$TOKENWISE" health --path "$dir" > "$out/health.json"
 
   log "$name: architecture-map ..."
-  "$YOYO" architecture-map --path "$dir" > "$out/architecture.json"
+  "$TOKENWISE" architecture-map --path "$dir" > "$out/architecture.json"
 
   log "$name: README ..."
   local readme=""
@@ -116,13 +116,13 @@ analyze_project() {
 
 summarize() {
   local report="$OUTPUT_DIR/summary.md"
-  local yoyo_version
-  yoyo_version=$("$YOYO" --version 2>/dev/null | head -1 || echo "unknown")
+  local tokenwise_version
+  tokenwise_version=$("$TOKENWISE" --version 2>/dev/null | head -1 || echo "unknown")
 
   {
-    echo "# yoyo benchmark summary"
+    echo "# tokenwise benchmark summary"
     echo "**Date:** $(date +%Y-%m-%d)"
-    echo "**yoyo:** $yoyo_version"
+    echo "**tokenwise:** $tokenwise_version"
     echo ""
     echo "| Project | Files | Languages | Dead code | God fns | Max complexity |"
     echo "|---|---|---|---|---|---|"

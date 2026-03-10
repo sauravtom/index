@@ -1,5 +1,5 @@
 [package]
-name = "yoyo"
+name = "tokenwise"
 version = "0.22.5"
 edition = "2021"
 

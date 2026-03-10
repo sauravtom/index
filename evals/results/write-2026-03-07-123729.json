@@ -7,7 +7,7 @@
       "pass": 9,
       "total": 13
     },
-    "yoyo": {
+    "tokenwise": {
       "pass": 13,
       "total": 14
     }
@@ -37,7 +37,7 @@
           "detail": ""
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "rename succeeded",
           "passed": true,
@@ -74,7 +74,7 @@
           "detail": "CC corrupted 2 partial matches as expected"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "rename succeeded",
           "passed": true,
@@ -106,7 +106,7 @@
           "detail": "deleted function body \u2014 callers will fail to compile"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "preflight blocked",
           "passed": true,
@@ -138,7 +138,7 @@
           "detail": ""
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "not blocked (dead function)",
           "passed": true,
@@ -170,7 +170,7 @@
           "detail": "CC must grep first to find the line \u2014 2 tool calls"
         }
       ],
-      "yoyo": [
+      "tokenwise": [
         {
           "label": "patch applied",
           "passed": true,

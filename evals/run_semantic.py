@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-yoyo semantic search eval — scores embedding-backed search top-N accuracy.
+tokenwise semantic search eval — scores embedding-backed search top-N accuracy.
 
 Usage:
     python3 evals/run_semantic.py --tasks evals/tasks/tokio_semantic.json
@@ -14,13 +14,13 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-YOYO = Path.home() / ".local/bin/yoyo"
+TOKENWISE = Path.home() / ".local/bin/tokenwise"
 TOP_N = 3
 
 
 def run_semantic(codebase_path: str, query: str, limit: int = 5) -> list[dict]:
     result = subprocess.run(
-        [str(YOYO), "semantic-search", "--path", codebase_path, "--query", query, "--limit", str(limit)],
+        [str(TOKENWISE), "semantic-search", "--path", codebase_path, "--query", query, "--limit", str(limit)],
         capture_output=True, text=True, timeout=30,
     )
     if result.returncode != 0:
@@ -96,7 +96,7 @@ def run_eval(tasks_path: str) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="yoyo semantic search eval")
+    parser = argparse.ArgumentParser(description="tokenwise semantic search eval")
     parser.add_argument("--tasks", required=True, help="Path to tasks JSON file")
     args = parser.parse_args()
     run_eval(args.tasks)

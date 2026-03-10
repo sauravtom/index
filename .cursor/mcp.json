@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "yoyo": {
+    "tokenwise": {
       "type": "stdio",
-      "command": "/Users/avirajkhare/ttt/yoyo/target/release/yoyo",
+      "command": "/Users/saurav/Documents/tokenwise/target/release/tokenwise",
       "args": ["--mcp-server"]
     }
   }

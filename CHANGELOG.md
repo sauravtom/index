@@ -20,7 +20,7 @@
 ## [0.22.2] - 2026-03-08
 
 ### Added
-- `llm_instructions` now includes 4 combination-focused workflows: "Safely delete dead code" (`health` → `blast_radius` → `graph_delete`), "Fix a broken API endpoint end-to-end" (`flow` → `symbol` → `multi_patch`), "Rename with safety check" (`blast_radius` → `graph_rename` → `symbol`), and "Orient to an unfamiliar codebase" (`shake` → `architecture_map` → `api_surface` → `all_endpoints` → `health`). Agents now learn the combination patterns that make yoyo effective, not just individual tool names.
+- `llm_instructions` now includes 4 combination-focused workflows: "Safely delete dead code" (`health` → `blast_radius` → `graph_delete`), "Fix a broken API endpoint end-to-end" (`flow` → `symbol` → `multi_patch`), "Rename with safety check" (`blast_radius` → `graph_rename` → `symbol`), and "Orient to an unfamiliar codebase" (`shake` → `architecture_map` → `api_surface` → `all_endpoints` → `health`). Agents now learn the combination patterns that make tokenwise effective, not just individual tool names.
 
 ## [0.22.1] - 2026-03-08
 
@@ -37,7 +37,7 @@
 - **`graph_create` tool** — create a new file with an initial function scaffold and auto-reindex.
   Errors if the file already exists or if the parent directory is missing. Language detected from
   extension or overridden via `language` param. Supports Rust, Python, TypeScript, Go, and others.
-  Available via MCP and CLI (`yoyo graph-create --file <path> --function-name <name>`).
+  Available via MCP and CLI (`tokenwise graph-create --file <path> --function-name <name>`).
 
 ### Fixed
 - **`slice` MCP params** renamed `start`/`end` → `start_line`/`end_line` to match the field names
@@ -52,7 +52,7 @@
 
 ### Added
 - **Patch by symbol** — `patch` can now target a function by name instead of file/line range.
-  CLI: `yoyo patch --symbol <name> --new-content "..." [--match-index N]`. MCP: pass `name`
+  CLI: `tokenwise patch --symbol <name> --new-content "..." [--match-index N]`. MCP: pass `name`
   (and optional `match_index`) instead of `file`/`start`/`end`. Resolves location from the bake
   index; same sort order as `symbol` (exact match first, then complexity). Range-based patch
   (`--file`, `--start`, `--end`) unchanged.
@@ -123,7 +123,7 @@
   copied per language.
 
 ### Dogfooding note
-This release was developed with yoyo indexing itself. `shake` and `api_surface` surfaced
+This release was developed with tokenwise indexing itself. `shake` and `api_surface` surfaced
 the complexity hotspots that drove the refactor strategy; `symbol`, `file_functions`, and
 `slice` replaced most manual file reads during implementation. Key gap discovered and fixed:
-yoyo previously had no Rust support, so it could not index its own engine — now it can.
+tokenwise previously had no Rust support, so it could not index its own engine — now it can.

@@ -34,7 +34,7 @@ pub fn build_embeddings(bake_dir: &Path) -> Result<()> {
         return Ok(());
     }
 
-    eprintln!("[yoyo] Building embeddings for {} functions (production only)…", production_fns.len());
+    eprintln!("[tokenwise] Building embeddings for {} functions (production only)…", production_fns.len());
 
     let mut model = TextEmbedding::try_new(
         InitOptions::new(MODEL).with_show_download_progress(true),
@@ -91,7 +91,7 @@ pub fn build_embeddings(bake_dir: &Path) -> Result<()> {
         }
     }
 
-    eprintln!("[yoyo] Embeddings stored → {}", db_path.display());
+    eprintln!("[tokenwise] Embeddings stored → {}", db_path.display());
     Ok(())
 }
 

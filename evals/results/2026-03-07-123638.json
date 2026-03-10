@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-123638",
   "codebase": "ripgrep",
-  "yoyo_version": "0.19.1",
+  "tokenwise_version": "0.19.1",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 20,
@@ -10,7 +10,7 @@
       "correct": 18,
       "total": 38
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 36,
       "total": 38
     }
@@ -43,7 +43,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the primary definition of `search_path` in `crates/core/search.rs` is located at **line 380** (ending at line 412).\n\nThis is indicated by the `\"primary\": true` field in the first match result.",
         "score": {
           "scores": {
@@ -95,7 +95,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search_path` function in `crates/core/search.rs` is **private**.\n\nBoth occurrences of `search_path` in the file show `\"visibility\": \"private\"`. One is a module-level private function (lines 380-412, marked as `\"primary\": true`), and the other is a private method on the `SearchWorker<W>` type (lines 342-351, marked as `\"primary\": false`).",
         "score": {
           "scores": {
@@ -135,7 +135,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `search_path` in `crates/core/search.rs` belongs to the module:\n\n**`crates::core`**\n\nThis is shown in the `module_path` field for both occurrences of `search_path` found in the search results.",
         "score": {
           "scores": {
@@ -175,7 +175,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, the `calls` array for the primary `search_path` match in `crates/core/search.rs` has **4** entries.\n\nThe output explicitly states: `calls array length: 4`",
         "score": {
           "scores": {
@@ -227,7 +227,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the blast-radius output for `search_path`, the distinct function names that directly call `search_path` (excluding self-recursion) are:\n\n1. `search`\n2. `search_decompress`\n\n**Count: 2 distinct non-self callers**",
         "score": {
           "scores": {
@@ -291,7 +291,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, the function with the highest complexity score is:\n\n**Function name:** `from_low_args`\n**File:** `crates/core/flags/hiargs.rs`\n**Complexity score:** 493\n\nHowever, I should note that this is only based on the single result shown in the tool output. To definitively state this is the highest complexity score across the entire ripgrep codebase, I would need to see a complete analysis of all functions.",
         "score": {
           "scores": {
@@ -355,7 +355,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` is defined in the file **`crates/core/flags/hiargs.rs`** at **line 113** (for the primary implementation on the `HiArgs` type).\n\nThere are also three additional `from_low_args` implementations for other types in the same file:\n- `Patterns::from_low_args` at line 980\n- `Paths::from_low_args` at line 1071\n- `BinaryDetection::from_low_args` at line 1159",
         "score": {
           "scores": {
@@ -419,7 +419,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` has **mixed visibility** in ripgrep:\n\n1. **Primary function (lines 113-322)**: `visibility: \"module\"` - This is the main `from_low_args` function at module level with module-level visibility (pub(crate) equivalent).\n\n2. **Three additional functions** (lines 980-1175): `visibility: \"private\"` - These are private `from_low_args` implementations that are methods on the `Patterns`, `Paths`, and `BinaryDetection` types respectively.\n\nSo the answer depends on which `from_low_args` you're referring to:\n- The primary module-level function is **module-level** (pub(crate))\n- The other three are **private** (likely impl methods on their respective types)",
         "score": {
           "scores": {
@@ -471,7 +471,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, the `calls` array for the primary `from_low_args` match in `crates/core/flags/hiargs.rs` contains **14** entries.\n\nThis is confirmed by the line `calls array length: 14` in the output.",
         "score": {
           "scores": {
@@ -517,7 +517,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, `generate_work` is defined in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Lines:** 1731-1801",
         "score": {
           "scores": {
@@ -563,7 +563,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is **private** in ripgrep.\n\nThe symbol information shows `\"visibility\": \"private\"`, and it is a method within the `Worker<'s>` type (indicated by `\"parent_type\": \"Worker<'s>\"`), meaning it's a private method rather than a module-level function.",
         "score": {
           "scores": {
@@ -603,7 +603,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `calls` array for the primary `generate_work` match in `crates/ignore/src/walk.rs` has **10** entries.",
         "score": {
           "scores": {
@@ -655,7 +655,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `build` method in the walk module is defined in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 565-618\n\nThis is the primary match for the `build` method, which belongs to the `WalkBuilder` type.",
         "score": {
           "scores": {
@@ -701,7 +701,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `build` function in `crates/ignore/src/walk.rs` (at lines 565-618) is **public**.\n\nThis can be seen from the match result which shows:\n- `\"visibility\": \"public\"`\n- `\"parent_type\": \"WalkBuilder\"`\n\nThis indicates it is a public method of the `WalkBuilder` type.",
         "score": {
           "scores": {
@@ -741,7 +741,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "The `calls` array for the primary `build` match in `crates/ignore/src/walk.rs` has **9** entries.",
         "score": {
           "scores": {
@@ -793,7 +793,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, there are multiple definitions of `is_match` in `crates/globset/src/lib.rs`. Here are all the line numbers:\n\n1. **Line 342-344** - `is_match` method on `GlobSet` (public)\n2. **Line 665-676** - `is_match` method on `GlobSetMatchStrategy` (private)\n3. **Line 708-710** - `is_match` method on `LiteralStrategy` (private)\n4. **Line 736-741** - `is_match` method on `BasenameLiteralStrategy` (private)\n5. **Line 770-775** - `is_match` method on `ExtensionStrategy` (private)\n6. **Line 800-808** - `is_match` method on `PrefixStrategy` (private)\n7. **Line 832-840** - `is_match` method on `SuffixStrategy` (private)\n8. **Line 860-875** - `is_match` method on `RequiredExtensionStrategy` (private)\n9. **Line 915-917** - `is_match` method on `RegexSetStrategy` (private)\n\nThe primary definition (marked as `\"primary\": true`) is at **line 860-875** in the `RequiredExtensionStrategy` implementation.",
         "score": {
           "scores": {
@@ -845,7 +845,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` belongs to the **`crates::ignore::src`** module in ripgrep.\n\nMore specifically, it is a private function located in the file `crates/ignore/src/walk.rs` and is associated with the `Worker<'s>` type (as indicated by the `parent_type` field).",
         "score": {
           "scores": {
@@ -885,7 +885,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `dead_code` array contains **84 items**.",
         "score": {
           "scores": {
@@ -943,7 +943,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the top 2 god functions (most complex) in ripgrep are:\n\n1. **from_low_args** - located in `crates/core/flags/hiargs.rs` (complexity score: 493)\n2. **generate_work** - located in `crates/ignore/src/walk.rs` (complexity score: 336)",
         "score": {
           "scores": {
@@ -1007,7 +1007,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `search` function is defined in `crates/core/search.rs` at **line 245** (spanning to line 267).",
         "score": {
           "scores": {

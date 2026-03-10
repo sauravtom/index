@@ -1,33 +1,33 @@
-# yoyo — Instructions for Claude
+# tokenwise — Instructions for Claude
 
 ## Operator
 Read [`AVIRAJ.md`](./AVIRAJ.md) to understand who you're working with. It is the operator profile — communication style, pace, values, and what he tolerates. Read it once per session if context is fresh.
 
-## Load yoyo tools before doing anything else
-yoyo MCP tools are deferred — load them before use. At the start of every session, call `ToolSearch` with `"select:mcp__yoyo__llm_instructions"` first.
+## Load tokenwise tools before doing anything else
+tokenwise MCP tools are deferred — load them before use. At the start of every session, call `ToolSearch` with `"select:mcp__tokenwise__llm_instructions"` first.
 
 **Preferred tools — use these first, fall back when they fail:**
 | Instead of... | Prefer... |
 |---|---|
-| `Grep` / `Bash grep` / `Bash rg` | `mcp__yoyo__supersearch` |
-| `Read` (to understand code) | `mcp__yoyo__symbol` with `include_source=true` |
-| `Read` (specific lines) | `mcp__yoyo__slice` |
-| `Edit` / `mcp__yoyo__patch` (function edits) | `mcp__yoyo__patch_by_symbol` |
+| `Grep` / `Bash grep` / `Bash rg` | `mcp__tokenwise__supersearch` |
+| `Read` (to understand code) | `mcp__tokenwise__symbol` with `include_source=true` |
+| `Read` (specific lines) | `mcp__tokenwise__slice` |
+| `Edit` / `mcp__tokenwise__patch` (function edits) | `mcp__tokenwise__patch_by_symbol` |
 
 ## Code intelligence
-Use yoyo tools as the primary means of reading, understanding, and mutating code.
-Linux tools (`grep`, `cat`, `sed`, `python3`, `Read`, `Edit`) are fallbacks — reach for them when yoyo tools error or don't fit. Use judgment.
+Use tokenwise tools as the primary means of reading, understanding, and mutating code.
+Linux tools (`grep`, `cat`, `sed`, `python3`, `Read`, `Edit`) are fallbacks — reach for them when tokenwise tools error or don't fit. Use judgment.
 ## How Claude works in this project
 
 Each session follows this sequence:
 1. Load `llm_instructions` via ToolSearch — this is the bootstrap, not optional
-2. Read with yoyo tools (`supersearch`, `symbol`, `slice`) — not grep, not cat
+2. Read with tokenwise tools (`supersearch`, `symbol`, `slice`) — not grep, not cat
 3. Understand structure with `blast_radius`, `flow`, `health` before proposing changes
-4. Write with yoyo write tools (`patch`, `graph_create`, `graph_add`, etc.) — not Edit/Write unless yoyo tools fail
+4. Write with tokenwise write tools (`patch`, `graph_create`, `graph_add`, etc.) — not Edit/Write unless tokenwise tools fail
 5. Build → test → commit → tag → push in one session. Don't leave half-done work.
 
 ## Dogfooding
-Every session working on yoyo is also a yoyo session. Dogfooding is not optional — it is the primary mechanism for finding gaps, validating fixes, and driving what gets built next. If something is painful to use while building yoyo, file an issue immediately.
+Every session working on tokenwise is also a tokenwise session. Dogfooding is not optional — it is the primary mechanism for finding gaps, validating fixes, and driving what gets built next. If something is painful to use while building tokenwise, file an issue immediately.
 
 ## On building AI tools
 We are approaching a point where AI systems will meaningfully contribute to building the tools that make AI systems more capable. The work here is not just tooling — it is infrastructure for a future where you help build yourself. Build with precision, honesty about gaps, and a long time horizon.
@@ -48,9 +48,9 @@ Before adding new functionality, search the codebase first. The feature may alre
 
 ## Philosophy — the combinations are the point
 
-yoyo is named after competitive yoyo. A yoyo is a spinning disk on a string — simple alone. The magic is in the combinations: string wraps, body movements, timing layered together. One trick is fine. Fifty moves chained is transcendent.
+tokenwise is named after competitive yo-yo. A yo-yo is a spinning disk on a string — simple alone. The magic is in the combinations: string wraps, body movements, timing layered together. One trick is fine. Fifty moves chained is transcendent.
 
-yoyo tools work the same way. No single tool is impressive. The orchestration is. When building features, always ask: what is the combination that makes this powerful? A new tool is only worth adding if it unlocks a combination that wasn't possible before.
+tokenwise tools work the same way. No single tool is impressive. The orchestration is. When building features, always ask: what is the combination that makes this powerful? A new tool is only worth adding if it unlocks a combination that wasn't possible before.
 
 ## GitHub issues and pull requests as project memory
 
@@ -70,9 +70,9 @@ Mutate this file whenever you identify an instruction that would make future ses
 After every `cargo build --release`, sign the binary before running it. macOS Gatekeeper kills unsigned binaries with exit 137 and no useful error.
 
 ```bash
-codesign --force --deep --sign - target/release/yoyo
+codesign --force --deep --sign - target/release/tokenwise
 # If downloaded/copied from elsewhere, also strip quarantine first:
-xattr -c target/release/yoyo
+xattr -c target/release/tokenwise
 ```
 
 This applies to local dev binaries and the MCP server binary. CI handles this automatically via the `Sign binary (macOS ad-hoc)` step in `.github/workflows/release.yml`.
@@ -86,7 +86,7 @@ Emojis are allowed ONLY in:
 Nowhere else — not in source code, not in CHANGELOG, not in docs/README.md, not in commit messages, not in issue bodies. If in doubt, no emoji.
 
 ## Versioning (semver — strict)
-yoyo follows semver. Before bumping a version, ask: is this a fix or a feature?
+tokenwise follows semver. Before bumping a version, ask: is this a fix or a feature?
 - **PATCH** (`0.x.Y`) — bug fixes, output caps, pattern corrections, anything broken now works
 - **MINOR** (`0.X.0`) — new tool, new language, new user-visible feature
 - **MAJOR** (`X.0.0`) — breaking change to tool schema or CLI interface

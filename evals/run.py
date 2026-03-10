@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-yoyo eval harness — measures LLM answer accuracy with CC tools vs yoyo tools.
+tokenwise eval harness — measures LLM answer accuracy with CC tools vs tokenwise tools.
 
 Usage:
     ANTHROPIC_API_KEY=sk-... python3 evals/run.py --tasks evals/tasks/ripgrep.json
@@ -9,7 +9,7 @@ Usage:
 How it works:
     For each task, two "agent answers" are generated:
       - CC mode:   runs grep/wc against the codebase, asks Claude to answer from raw text
-      - yoyo mode: runs yoyo CLI tools, asks Claude to answer from structured JSON
+      - tokenwise mode: runs tokenwise CLI tools, asks Claude to answer from structured JSON
 
     A judge (Claude Haiku) scores each answer against verified ground truth.
 
@@ -28,7 +28,7 @@ from pathlib import Path
 
 import anthropic
 
-YOYO = Path.home() / ".local/bin/yoyo"
+TOKENWISE = Path.home() / ".local/bin/tokenwise"
 MODEL_AGENT = "claude-haiku-4-5-20251001"
 MODEL_JUDGE = "claude-haiku-4-5-20251001"
 
@@ -79,21 +79,21 @@ def cc_tool_output(task: dict, codebase_path: str) -> str:
     return "(No tool output available for this task type)"
 
 
-def yoyo_tool_output(task: dict, codebase_path: str) -> str:
-    """Run the appropriate yoyo tool and return its JSON output.
+def tokenwise_tool_output(task: dict, codebase_path: str) -> str:
+    """Run the appropriate tokenwise tool and return its JSON output.
     For counting tasks, extract the relevant fact to avoid agent miscounting large JSON."""
     ttype     = task["type"]
     name      = _symbol_name(task)
     file_hint = task.get("file_hint")
 
     if ttype in ("definition_location", "visibility", "module_path"):
-        cmd = [str(YOYO), "symbol", "--path", codebase_path, "--name", name]
+        cmd = [str(TOKENWISE), "symbol", "--path", codebase_path, "--name", name]
         if file_hint:
             cmd += ["--file", file_hint]
         return run(cmd)
 
     if ttype == "fan_out":
-        cmd = [str(YOYO), "symbol", "--path", codebase_path, "--name", name]
+        cmd = [str(TOKENWISE), "symbol", "--path", codebase_path, "--name", name]
         if file_hint:
             cmd += ["--file", file_hint]
         raw = run(cmd)
@@ -117,7 +117,7 @@ def yoyo_tool_output(task: dict, codebase_path: str) -> str:
 
     if ttype == "caller_count":
         # depth=2 matches the ground truth methodology.
-        raw = run([str(YOYO), "blast-radius", "--path", codebase_path,
+        raw = run([str(TOKENWISE), "blast-radius", "--path", codebase_path,
                    "--symbol", name, "--depth", "2"])
         try:
             d = json.loads(raw)
@@ -131,7 +131,7 @@ def yoyo_tool_output(task: dict, codebase_path: str) -> str:
         return raw
 
     if ttype == "complexity_rank":
-        raw = run([str(YOYO), "health", "--path", codebase_path])
+        raw = run([str(TOKENWISE), "health", "--path", codebase_path])
         try:
             d = json.loads(raw)
             top = d.get("god_functions", [])
@@ -148,7 +148,7 @@ def yoyo_tool_output(task: dict, codebase_path: str) -> str:
         return raw
 
     if ttype == "health_god_functions":
-        raw = run([str(YOYO), "health", "--path", codebase_path])
+        raw = run([str(TOKENWISE), "health", "--path", codebase_path])
         try:
             d = json.loads(raw)
             top = d.get("god_functions", [])[:2]
@@ -161,7 +161,7 @@ def yoyo_tool_output(task: dict, codebase_path: str) -> str:
         return raw
 
     if ttype == "health_dead_code":
-        raw = run([str(YOYO), "health", "--path", codebase_path])
+        raw = run([str(TOKENWISE), "health", "--path", codebase_path])
         # Pre-extract dead_code count to avoid agent miscounting large array.
         try:
             d = json.loads(raw)
@@ -171,7 +171,7 @@ def yoyo_tool_output(task: dict, codebase_path: str) -> str:
             pass
         return raw
 
-    return "(No yoyo tool available for this task type)"
+    return "(No tokenwise tool available for this task type)"
 
 
 def _symbol_name(task: dict) -> str:
@@ -270,7 +270,7 @@ def run_eval(task_file: str, filter_ids: list[str] | None = None) -> dict:
         tasks = [t for t in tasks if t["id"] in filter_ids]
 
     results = []
-    totals = {"cc": {"correct": 0, "total": 0}, "yoyo": {"correct": 0, "total": 0}}
+    totals = {"cc": {"correct": 0, "total": 0}, "tokenwise": {"correct": 0, "total": 0}}
 
     for task in tasks:
         tid   = task["id"]
@@ -283,13 +283,13 @@ def run_eval(task_file: str, filter_ids: list[str] | None = None) -> dict:
         print(f"Q: {q[:80]}...")
 
         cc_out   = cc_tool_output(task, codebase_path)
-        yoyo_out = yoyo_tool_output(task, codebase_path)
+        tokenwise_out = tokenwise_tool_output(task, codebase_path)
 
         cc_ans   = agent_answer(q, cc_out)
-        yoyo_ans = agent_answer(q, yoyo_out)
+        tokenwise_ans = agent_answer(q, tokenwise_out)
 
         cc_score   = judge(q, gt, cc_ans)
-        yoyo_score = judge(q, gt, yoyo_ans)
+        tokenwise_score = judge(q, gt, tokenwise_ans)
 
         def print_scores(label, score):
             overall = score["overall"]
@@ -299,39 +299,39 @@ def run_eval(task_file: str, filter_ids: list[str] | None = None) -> dict:
                 print(f"    {icon} {dim:25s} [{s['failure_mode']:12s}] {s['note']}")
 
         print_scores("CC  ", cc_score)
-        print_scores("yoyo", yoyo_score)
+        print_scores("tokenwise", tokenwise_score)
 
         cc_c   = cc_score["overall"]["correct_count"]
         cc_t   = cc_score["overall"]["total"]
-        yy_c   = yoyo_score["overall"]["correct_count"]
-        yy_t   = yoyo_score["overall"]["total"]
+        yy_c   = tokenwise_score["overall"]["correct_count"]
+        yy_t   = tokenwise_score["overall"]["total"]
 
         totals["cc"]["correct"]   += cc_c
         totals["cc"]["total"]     += cc_t
-        totals["yoyo"]["correct"] += yy_c
-        totals["yoyo"]["total"]   += yy_t
+        totals["tokenwise"]["correct"] += yy_c
+        totals["tokenwise"]["total"]   += yy_t
 
         results.append({
             "id": tid,
             "type": ttype,
             "cc":   {"answer": cc_ans,   "score": cc_score},
-            "yoyo": {"answer": yoyo_ans, "score": yoyo_score},
+            "tokenwise": {"answer": tokenwise_ans, "score": tokenwise_score},
         })
 
     print(f"\n{'═'*60}")
     print("FINAL RESULTS")
     print(f"{'═'*60}")
-    for mode in ["cc", "yoyo"]:
+    for mode in ["cc", "tokenwise"]:
         c = totals[mode]["correct"]
         t = totals[mode]["total"]
         pct = round(100 * c / t) if t else 0
-        label = "Claude Code" if mode == "cc" else "yoyo       "
+        label = "Claude Code" if mode == "cc" else "tokenwise       "
         print(f"  {label}: {c}/{t} ({pct}%)")
 
     run_result = {
         "run_id":       datetime.now().strftime("%Y-%m-%d-%H%M%S"),
         "codebase":     suite["codebase"],
-        "yoyo_version": _yoyo_version(),
+        "tokenwise_version": _tokenwise_version(),
         "model_agent":  MODEL_AGENT,
         "model_judge":  MODEL_JUDGE,
         "tasks_run":    len(tasks),
@@ -341,13 +341,13 @@ def run_eval(task_file: str, filter_ids: list[str] | None = None) -> dict:
     return run_result
 
 
-def _yoyo_version() -> str:
-    out = run([str(YOYO), "--version"])
+def _tokenwise_version() -> str:
+    out = run([str(TOKENWISE), "--version"])
     return out.split()[-1] if out else "unknown"
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="yoyo eval harness")
+    parser = argparse.ArgumentParser(description="tokenwise eval harness")
     parser.add_argument("--tasks",  required=True, help="Path to tasks JSON file")
     parser.add_argument("--ids",    help="Comma-separated task IDs to run (default: all)")
     parser.add_argument("--output", help="Output file (default: evals/results/<timestamp>.json)")

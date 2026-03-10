@@ -16,11 +16,11 @@
 |---|---|---|
 | `total_modules` field present | Yes | ✅ verified |
 | `truncated: true` when modules > limit | Yes | ✅ verified |
-| `truncated: false` when modules ≤ limit | Yes | ✅ verified (yoyo: 3 modules) |
+| `truncated: false` when modules ≤ limit | Yes | ✅ verified (tokenwise: 3 modules) |
 | Output bounded at `limit` modules (default 20) | Yes | ✅ verified |
 | Per-module functions still truncated at `limit` | Yes | ✅ verified |
 
-**Tested on:** yoyo (3 modules, no truncation) + wise-analytics (4 modules, no truncation)
+**Tested on:** tokenwise (3 modules, no truncation) + wise-analytics (4 modules, no truncation)
 **Needs regression on:** face-api.js (386 files) — expected `truncated: true`
 
 ---
@@ -34,11 +34,11 @@
 | `truncated: bool` field present | Yes | ✅ verified |
 | Stops at 50 matches by default | Yes | ✅ verified |
 | `doc_type: "config"` does NOT match arbitrary `.json` files | Correct | ✅ fixed |
-| `doc_type: "config"` matches `.toml`, `.yaml`, `.yml` | Correct | ✅ verified (Cargo.toml on yoyo) |
+| `doc_type: "config"` matches `.toml`, `.yaml`, `.yml` | Correct | ✅ verified (Cargo.toml on tokenwise) |
 | `doc_type: "all"` on wise-analytics returns 11 files, not 298K | ✅ | ✅ verified |
 | `--limit N` CLI flag accepted | Yes | ✅ in struct |
 
-**Tested on:** yoyo (35 files), wise-analytics (11 files)
+**Tested on:** tokenwise (35 files), wise-analytics (11 files)
 **Needs regression on:** face-api.js — old behaviour was 298K chars; expected ≤ 50 results now
 
 ---

@@ -1,9 +1,9 @@
 use clap::{Args, Subcommand};
 
-/// High-level yoyo commands exposed to humans.
+/// High-level tokenwise commands exposed to humans.
 #[derive(Subcommand, Debug)]
 pub enum Command {
-    /// Prime directive and usage instructions for yoyo.
+    /// Prime directive and usage instructions for tokenwise.
     LlmInstructions(LlmInstructionsArgs),
     /// Repository overview similar to Shake.readme.
     Shake(ShakeArgs),
@@ -466,7 +466,7 @@ pub async fn run(command: Option<Command>) -> anyhow::Result<()> {
         Some(Command::SemanticSearch(args)) => run_semantic_search(args).await?,
         None => {
             eprintln!(
-                "No command provided. Run `yoyo --help` for available commands."
+                "No command provided. Run `tokenwise --help` for available commands."
             );
         }
     }
@@ -594,7 +594,7 @@ async fn run_patch(args: PatchArgs) -> anyhow::Result<()> {
         crate::engine::patch(args.path, file, start, end, args.new_content)?
     } else {
         anyhow::bail!(
-            "Patch requires either --symbol (patch by symbol name) or --file, --start, and --end (patch by range). See `yoyo patch --help`."
+            "Patch requires either --symbol (patch by symbol name) or --file, --start, and --end (patch by range). See `tokenwise patch --help`."
         )
     };
     println!("{json}");

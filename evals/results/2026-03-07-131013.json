@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-131013",
   "codebase": "tokio",
-  "yoyo_version": "0.20.0",
+  "tokenwise_version": "0.20.0",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 14,
@@ -10,7 +10,7 @@
       "correct": 6,
       "total": 20
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 19,
       "total": 22
     }
@@ -43,7 +43,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `poll_acquire` is defined in:\n\n**File:** `tokio/src/sync/batch_semaphore.rs`\n**Line:** 397-522 (the function spans from line 397 to line 522)",
         "score": {
           "scores": {
@@ -89,7 +89,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `poll_acquire` in `tokio/src/sync/batch_semaphore.rs` is **private**.\n\nThis is indicated by the `\"visibility\": \"private\"` field in the match result.",
         "score": {
           "scores": {
@@ -129,7 +129,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `poll_acquire` belongs to the module with the full path:\n\n**`tokio::src::sync`**\n\nThis is shown in the `module_path` field of the match result.",
         "score": {
           "scores": {
@@ -169,7 +169,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `calls` array length for `poll_acquire` in `tokio/src/sync/batch_semaphore.rs` is **14**.",
         "score": {
           "scores": {
@@ -209,7 +209,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the blast-radius tool output provided, **69** distinct functions call `poll_acquire` in tokio (excluding self-recursion).\n\nThis is indicated by the \"unique non-self callers: 69\" metric in the output.",
         "score": {
           "scores": {
@@ -255,7 +255,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, the function with the highest complexity score in tokio is:\n\n**Function name:** `test_combination`\n**File:** `tokio/src/runtime/tests/task_combinations.rs`\n**Complexity score:** 957",
         "score": {
           "scores": {
@@ -319,7 +319,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "The primary `spawn_blocking` is defined at **line 298** in `tokio/src/runtime/blocking/pool.rs`.",
         "score": {
           "scores": {
@@ -365,7 +365,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `spawn_blocking` in `tokio/src/runtime/blocking/pool.rs` is **module-level** (pub(crate)).\n\nThe search results show two `spawn_blocking` matches in this file, and both have `\"visibility\": \"module\"`, which indicates they have module-level visibility (pub(crate) in Rust terminology).",
         "score": {
           "scores": {
@@ -405,7 +405,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output provided, **99** distinct functions call `spawn_blocking` in tokio (excluding self-recursion).\n\nThis is indicated by the \"unique non-self callers\" metric in the blast-radius output, which specifically excludes self-recursive calls.",
         "score": {
           "scores": {
@@ -451,7 +451,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, `poll` is defined in `tokio/src/sync/batch_semaphore.rs` at **line 578** (spanning through line 618).",
         "score": {
           "scores": {
@@ -497,7 +497,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `calls` array for `poll` in `tokio/src/sync/batch_semaphore.rs` has **3** entries.\n\nThis is explicitly stated in the output: `calls array length: 3`",
         "score": {
           "scores": {
@@ -537,7 +537,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `dead_code` array contains **126 items** in the tokio codebase.",
         "score": {
           "scores": {
@@ -583,7 +583,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the health tool output, the top 2 god functions (most complex) in tokio are:\n\n1. **test_combination** - located in `tokio/src/runtime/tests/task_combinations.rs` (complexity score: 957)\n\n2. **test_named_pipe_multi_client_ready** - located in `tokio/tests/net_named_pipe.rs` (complexity score: 480)",
         "score": {
           "scores": {
@@ -641,7 +641,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `spawn_blocking` in `tokio/src/runtime/blocking/pool.rs` belongs to the module:\n\n**`tokio::src::runtime::blocking`**\n\nThis can be seen from the `module_path` field in the matches, which shows `\"module_path\": \"tokio::src::runtime::blocking\"` for both `spawn_blocking` functions found in that file.",
         "score": {
           "scores": {

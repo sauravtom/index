@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yoyo – Code search and editing tools for AI assistants</title>
+  <title>tokenwise – Code search and editing tools for AI assistants</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -225,7 +225,7 @@
       <li><a href="#claude">How Claude works</a></li>
       <li><a href="#tools">Tools</a></li>
       <li><a href="#install">Install</a></li>
-      <li><a href="https://github.com/avirajkhare00/yoyo">GitHub</a></li>
+      <li><a href="https://github.com/sauravtom/tokenwise">GitHub</a></li>
     </ul>
   </div>
 </nav>
@@ -234,12 +234,12 @@
   <div class="container">
     <h1>Your AI reads your<br><em>actual code.</em></h1>
     <p class="subtitle">
-      yoyo parses your codebase into a searchable index and gives Claude or Cursor 27 tools to read and edit it.
+      tokenwise parses your codebase into a searchable index and gives Claude or Cursor 27 tools to read and edit it.
       No more guessing at file paths, function names, or module structure.
     </p>
     <div class="cta-group">
       <a class="btn btn-primary" href="#install">Install</a>
-      <a class="btn btn-ghost" href="https://github.com/avirajkhare00/yoyo">View on GitHub</a>
+      <a class="btn btn-ghost" href="https://github.com/sauravtom/tokenwise">View on GitHub</a>
     </div>
   </div>
 </section>
@@ -272,10 +272,10 @@
 <section id="how">
   <div class="container">
     <h2>The problem it solves</h2>
-    <p class="section-sub">Without a tool to read your code, AI assistants guess. yoyo stops the guessing.</p>
+    <p class="section-sub">Without a tool to read your code, AI assistants guess. tokenwise stops the guessing.</p>
     <div class="two-col">
       <div>
-        <p style="font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:14px;">Without yoyo</p>
+        <p style="font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:14px;">Without tokenwise</p>
         <ul class="problem-list">
           <li><strong>Wrong file paths</strong>AI assistants invent plausible-sounding paths that don't exist in your project.</li>
           <li><strong>Stale function names</strong>Answers come from training data, not your current code on disk.</li>
@@ -284,10 +284,10 @@
         </ul>
       </div>
       <div>
-        <p style="font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:14px;">With yoyo</p>
+        <p style="font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:14px;">With tokenwise</p>
         <ul class="benefit-list">
           <li><strong>Exact file paths and line numbers</strong>Every answer comes from the AST. File, line, and byte offset are exact.</li>
-          <li><strong>Current function names</strong>yoyo reads your files on disk. The index is always in sync after every edit.</li>
+          <li><strong>Current function names</strong>tokenwise reads your files on disk. The index is always in sync after every edit.</li>
           <li><strong>30-second onboarding</strong>8 parallel tool calls replace 15–20 minutes of directory browsing and grepping.</li>
           <li><strong>Full call graph</strong><code>blast_radius</code> finds every function that calls yours, transitively.</li>
         </ul>
@@ -301,7 +301,7 @@
 <section>
   <div class="container">
     <h2>What it does</h2>
-    <p class="section-sub">yoyo runs one command to parse your project, then serves the results over MCP.</p>
+    <p class="section-sub">tokenwise runs one command to parse your project, then serves the results over MCP.</p>
     <div class="grid">
 
       <div class="card">
@@ -352,8 +352,8 @@
 
 <section id="claude">
   <div class="container">
-    <h2>How Claude works with yoyo</h2>
-    <p class="section-sub">Claude treats yoyo as its primary interface to the codebase. You don't manage the tool calls.</p>
+    <h2>How Claude works with tokenwise</h2>
+    <p class="section-sub">Claude treats tokenwise as its primary interface to the codebase. You don't manage the tool calls.</p>
     <div class="grid">
       <div class="card">
         <h3>1. Bootstrap</h3>
@@ -425,8 +425,8 @@
   <div class="container">
     <h2>🪀 Philosophy</h2>
     <p class="section-sub">One tool is fine. Combinations are deadly.</p>
-    <p>In yoyo tournaments, a yoyo is just a spinning disk on a string. The magic is in the combinations — string wraps, body movements, timing layered together. A single trick is fine. Fifty moves chained in sequence is something else entirely.</p>
-    <p>yoyo works the same way. Each tool does one thing cleanly. The power is in how your agent orchestrates them:</p>
+    <p>In yo-yo tournaments, a yo-yo is just a spinning disk on a string. The magic is in the combinations — string wraps, body movements, timing layered together. A single trick is fine. Fifty moves chained in sequence is something else entirely.</p>
+    <p>tokenwise works the same way. Each tool does one thing cleanly. The power is in how your agent orchestrates them:</p>
     <table class="tools-table" style="margin-top:24px;">
       <thead><tr><th>Combination</th><th>What it does</th></tr></thead>
       <tbody>
@@ -450,44 +450,44 @@
 
     <p style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:12px;">macOS — Homebrew (recommended)</p>
 
-    <pre><span class="cmd">brew tap</span> avirajkhare00/yoyo
-<span class="cmd">brew install</span> yoyo</pre>
+    <pre><span class="cmd">brew tap</span> sauravtom/tokenwise
+<span class="cmd">brew install</span> tokenwise</pre>
 
     <p style="margin-top:8px; font-size:0.92rem; color:var(--muted);">Homebrew handles signing and PATH automatically. No <code>codesign</code>, no <code>sudo mv</code>.</p>
 
     <p style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 12px;">macOS — manual (Apple Silicon)</p>
 
-    <pre><span class="cmd">curl</span> -L https://github.com/avirajkhare00/yoyo/releases/latest/download/yoyo-aarch64-apple-darwin.tar.gz \
+    <pre><span class="cmd">curl</span> -L https://github.com/sauravtom/tokenwise/releases/latest/download/tokenwise-aarch64-apple-darwin.tar.gz \
   | tar xz
-<span class="cmd">sudo mv</span> yoyo-aarch64-apple-darwin /usr/local/bin/yoyo
+<span class="cmd">sudo mv</span> tokenwise-aarch64-apple-darwin /usr/local/bin/tokenwise
 <span class="comment"># Required: sign or Gatekeeper kills it silently (exit 137)</span>
-<span class="cmd">codesign</span> --force --deep --sign - /usr/local/bin/yoyo</pre>
+<span class="cmd">codesign</span> --force --deep --sign - /usr/local/bin/tokenwise</pre>
 
     <p style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 12px;">Linux (x86_64)</p>
 
-    <pre><span class="cmd">curl</span> -L https://github.com/avirajkhare00/yoyo/releases/latest/download/yoyo-x86_64-unknown-linux-gnu.tar.gz \
+    <pre><span class="cmd">curl</span> -L https://github.com/sauravtom/tokenwise/releases/latest/download/tokenwise-x86_64-unknown-linux-gnu.tar.gz \
   | tar xz
-<span class="cmd">sudo mv</span> yoyo-x86_64-unknown-linux-gnu /usr/local/bin/yoyo</pre>
+<span class="cmd">sudo mv</span> tokenwise-x86_64-unknown-linux-gnu /usr/local/bin/tokenwise</pre>
 
     <p style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 12px;">Build from source</p>
 
-    <pre><span class="cmd">git</span> clone https://github.com/avirajkhare00/yoyo.git
-<span class="cmd">cd</span> yoyo && <span class="cmd">cargo build</span> --release
-<span class="cmd">sudo cp</span> target/release/yoyo /usr/local/bin/yoyo</pre>
+    <pre><span class="cmd">git</span> clone https://github.com/sauravtom/tokenwise.git
+<span class="cmd">cd</span> tokenwise && <span class="cmd">cargo build</span> --release
+<span class="cmd">sudo cp</span> target/release/tokenwise /usr/local/bin/tokenwise</pre>
 
     <p style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 12px;">Quick start</p>
 
     <pre><span class="comment"># index your project</span>
-<span class="cmd">yoyo bake</span> --path /path/to/your/project
+<span class="cmd">tokenwise bake</span> --path /path/to/your/project
 
 <span class="comment"># overview: languages, file counts, most complex functions</span>
-<span class="cmd">yoyo shake</span> --path /path/to/your/project
+<span class="cmd">tokenwise shake</span> --path /path/to/your/project
 
 <span class="comment"># find a function by name</span>
-<span class="cmd">yoyo symbol</span> --path /path/to/your/project --name myFunction
+<span class="cmd">tokenwise symbol</span> --path /path/to/your/project --name myFunction
 
 <span class="comment"># search across all files</span>
-<span class="cmd">yoyo supersearch</span> --path /path/to/your/project --query myFunction</pre>
+<span class="cmd">tokenwise supersearch</span> --path /path/to/your/project --query myFunction</pre>
   </div>
 </section>
 
@@ -496,7 +496,7 @@
 <section id="mcp">
   <div class="container">
     <h2>Connect to Claude or Cursor</h2>
-    <p class="section-sub">Add yoyo as an MCP server. Claude calls the tools automatically — you don't manage it.</p>
+    <p class="section-sub">Add tokenwise as an MCP server. Claude calls the tools automatically — you don't manage it.</p>
     <div class="mcp-block">
       <div class="mcp-text">
         <h3>Claude Code</h3>
@@ -508,9 +508,9 @@
       <div class="mcp-code">
         <pre>{
   <span class="kw">"mcpServers"</span>: {
-    <span class="kw">"yoyo"</span>: {
+    <span class="kw">"tokenwise"</span>: {
       <span class="kw">"type"</span>: <span class="cmd">"stdio"</span>,
-      <span class="kw">"command"</span>: <span class="cmd">"/usr/local/bin/yoyo"</span>,
+      <span class="kw">"command"</span>: <span class="cmd">"/usr/local/bin/tokenwise"</span>,
       <span class="kw">"args"</span>: [<span class="cmd">"--mcp-server"</span>]
     }
   }
@@ -574,7 +574,7 @@
 
     <table style="margin-bottom:24px;">
       <thead>
-        <tr><th>Codebase</th><th>Language</th><th>yoyo</th><th>Claude Code (no index)</th></tr>
+        <tr><th>Codebase</th><th>Language</th><th>tokenwise</th><th>Claude Code (no index)</th></tr>
       </thead>
       <tbody>
         <tr><td>ripgrep — CLI binary</td><td>Rust</td><td><strong style="color:var(--accent2)">22/22 — 100%</strong></td><td style="color:var(--muted)">5/20 — 25%</td></tr>
@@ -594,14 +594,14 @@
     </p>
 
     <p style="font-size:0.88rem; color:var(--muted);">
-      Full report: <a href="https://github.com/avirajkhare00/yoyo/blob/main/evals/REPORT.md">evals/REPORT.md</a>
+      Full report: <a href="https://github.com/sauravtom/tokenwise/blob/main/evals/REPORT.md">evals/REPORT.md</a>
     </p>
   </div>
 </section>
 
 <footer>
   <div class="container">
-    <p>yoyo — runs locally, no telemetry &bull; <a href="https://github.com/avirajkhare00/yoyo">github.com/avirajkhare00/yoyo</a> &bull; MIT license</p>
+    <p>tokenwise — runs locally, no telemetry &bull; <a href="https://github.com/sauravtom/tokenwise">github.com/sauravtom/tokenwise</a> &bull; MIT license</p>
   </div>
 </footer>
 

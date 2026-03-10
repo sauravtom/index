@@ -1,7 +1,7 @@
 {
   "run_id": "2026-03-07-035755",
   "codebase": "ripgrep",
-  "yoyo_version": "0.16.3",
+  "tokenwise_version": "0.16.3",
   "model_agent": "claude-haiku-4-5-20251001",
   "model_judge": "claude-haiku-4-5-20251001",
   "tasks_run": 20,
@@ -10,7 +10,7 @@
       "correct": 14,
       "total": 31
     },
-    "yoyo": {
+    "tokenwise": {
       "correct": 28,
       "total": 35
     }
@@ -43,7 +43,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the primary definition of `search_path` in `crates/core/search.rs` is located at **line 380** (spanning lines 380-412). This is identified by the `\"primary\": true` flag in the first match.",
         "score": {
           "scores": {
@@ -89,7 +89,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the `search_path` function in `crates/core/search.rs` is **private**.\n\nBoth occurrences of the `search_path` function shown in the results have `\"visibility\": \"private\"`.",
         "score": {
           "scores": {
@@ -129,7 +129,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `search_path` in `crates/core/search.rs` belongs to the module:\n\n**`crates::core`**\n\nThis is shown in the `module_path` field for both matches of the `search_path` function found in that file.",
         "score": {
           "scores": {
@@ -175,7 +175,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The tool search for \"calls\" returned no matches (`\"matches\": []`), so I cannot access the `search_path` match or count the entries in a `calls` array in `crates/core/search.rs`.\n\nTo answer this question, I would need the tool output to contain actual results from searching for the relevant code in that file.",
         "score": {
           "scores": {
@@ -221,7 +221,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, **1 function** directly calls `search_path` in ripgrep.\n\nThe callers list shows:\n- `search_path` is called by itself with complexity 2, depth 1 in `crates/core/search.rs`\n\nThis indicates that `search_path` calls itself (recursive call). Looking at the other callers listed, they call `search` (not `search_path`), so only the one recursive call to `search_path` itself is a direct caller of the `search_path` function.",
         "score": {
           "scores": {
@@ -279,7 +279,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the function with the highest complexity score in ripgrep is:\n\n**Function name:** `from_low_args`\n**File:** `crates/core/flags/hiargs.rs`\n**Complexity:** 17\n**Fan out:** 29\n**Score:** 493",
         "score": {
           "scores": {
@@ -337,7 +337,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` is defined in:\n\n**File:** `crates/core/flags/hiargs.rs`\n\n**Line:** 113 (the primary definition)\n\nThere are also additional overloaded or specialized implementations of `from_low_args` at lines 980, 1071, and 1159 in the same file, but the primary definition starts at line 113.",
         "score": {
           "scores": {
@@ -389,7 +389,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `from_low_args` has **mixed visibility levels** in ripgrep:\n\n1. **Primary function (lines 113-322)**: `visibility: \"module\"` - This is the main `from_low_args` function, which has module-level visibility (pub(crate)).\n\n2. **Secondary functions (lines 980-1048, 1071-1134, 1159-1175)**: `visibility: \"private\"` - These are private helper implementations of `from_low_args`, likely trait implementations or private variants.\n\nThe primary, main `from_low_args` function is **module-level** (not fully public, but accessible throughout the crate), while the other `from_low_args` definitions are **private**.",
         "score": {
           "scores": {
@@ -435,7 +435,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The search results show no matches for `calls`, which means either:\n\n1. The `calls` array doesn't exist in the location specified\n2. The symbol search didn't find it\n3. The file path or function name may be different\n\nTo answer your question accurately, I would need the actual content of `crates/core/flags/hiargs.rs` showing the `from_low_args` function and its `calls` array definition.",
         "score": {
           "scores": {
@@ -481,7 +481,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is defined in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 1731 (start of function definition)",
         "score": {
           "scores": {
@@ -527,7 +527,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` is **private** in ripgrep.\n\nThis can be seen from the `\"visibility\": \"private\"` field in the symbol information. Additionally, the function is located in `crates/ignore/src/walk.rs` and has `\"primary\": true`, indicating it's a private function defined at the module level.",
         "score": {
           "scores": {
@@ -567,7 +567,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The tool output shows that the symbol search for \"calls\" returned no matches (empty matches array). Without the actual code content from `crates/ignore/src/walk.rs`, I cannot count the entries in the `calls` array of the `generate_work` function.\n\nTo answer this question, I would need tool output that contains the actual source code or more specific symbol search results that successfully locate the `calls` array within the `generate_work` function.",
         "score": {
           "scores": {
@@ -613,7 +613,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the primary `build` function in the walk module is defined in:\n\n**File:** `crates/ignore/src/walk.rs`\n**Line:** 565-618\n\nThis is the one marked as `primary: true` in the results, with `qualified_name: crates::ignore::src::build` and `visibility: public`.",
         "score": {
           "scores": {
@@ -659,7 +659,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `build` function in `crates/ignore/src/walk.rs` (at lines 565-618) is **public**. \n\nThis can be seen from the `\"visibility\": \"public\"` field in the first match result.",
         "score": {
           "scores": {
@@ -699,7 +699,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "I cannot determine this from the available output. The tool output shows that a search for \"calls\" returned no matches (empty matches array). To answer your question about the `calls` array in `crates/ignore/src/walk.rs`, I would need the actual file contents or a successful symbol lookup that returns the relevant code section.",
         "score": {
           "scores": {
@@ -739,7 +739,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, there are multiple definitions of `is_match` in `crates/globset/src/lib.rs`. Here are all the line numbers where `is_match` is defined:\n\n- Line 342-344 (public)\n- Line 665-676 (private)\n- Line 708-710 (private)\n- Line 736-741 (private)\n- Line 770-775 (private)\n- Line 800-808 (private)\n- Line 832-840 (private)\n- Line 860-875 (private, marked as primary)\n- Line 915-917 (private)\n\nThe **primary definition** (marked as `\"primary\": true`) is at **line 860**.",
         "score": {
           "scores": {
@@ -785,7 +785,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, `generate_work` belongs to the **`crates::ignore::src`** module in ripgrep.\n\nMore specifically, it is defined in the file `crates/ignore/src/walk.rs` at lines 1731-1801.",
         "score": {
           "scores": {
@@ -831,7 +831,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "The `dead_code` array contains **112 items**.",
         "score": {
           "scores": {
@@ -883,7 +883,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "Based on the tool output, the top 2 god functions (most complex) in ripgrep are:\n\n1. **`from_low_args`** in `crates/core/flags/hiargs.rs` (score: 493, complexity: 17, fan_out: 29)\n\n2. **`generate_work`** in `crates/ignore/src/walk.rs` (score: 336, complexity: 14, fan_out: 24)",
         "score": {
           "scores": {
@@ -947,7 +947,7 @@
           }
         }
       },
-      "yoyo": {
+      "tokenwise": {
         "answer": "According to the tool output, the `search` function is defined in `crates/core/search.rs` at **lines 245-267**.",
         "score": {
           "scores": {
