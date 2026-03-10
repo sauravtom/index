@@ -174,6 +174,44 @@ pub(crate) struct SymbolMatch {
 }
 
 #[derive(Serialize)]
+pub(crate) struct ContextPayload {
+    pub(crate) tool: &'static str,
+    pub(crate) version: &'static str,
+    pub(crate) project_root: PathBuf,
+    pub(crate) symbol: String,
+    pub(crate) results: Vec<ContextResult>,
+}
+
+#[derive(Serialize)]
+pub(crate) struct ContextResult {
+    pub(crate) name: String,
+    pub(crate) file: String,
+    pub(crate) start_line: u32,
+    pub(crate) end_line: u32,
+    pub(crate) complexity: u32,
+    pub(crate) visibility: crate::lang::Visibility,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) module_path: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) qualified_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) parent_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) snippet: Option<String>,
+    pub(crate) direct_callers: Vec<ContextCaller>,
+    pub(crate) outgoing_calls: Vec<String>,
+    pub(crate) related_endpoints: Vec<EndpointSummary>,
+}
+
+#[derive(Serialize)]
+pub(crate) struct ContextCaller {
+    pub(crate) name: String,
+    pub(crate) file: String,
+    pub(crate) start_line: u32,
+    pub(crate) complexity: u32,
+}
+
+#[derive(Serialize)]
 pub(crate) struct AllEndpointsPayload {
     pub(crate) tool: &'static str,
     pub(crate) version: &'static str,
@@ -580,4 +618,28 @@ pub(crate) struct GraphDeletePayload {
     pub(crate) bytes_removed: usize,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub(crate) warnings: Vec<String>,
+}
+
+#[derive(Serialize)]
+pub(crate) struct ChangeImpactPayload {
+    pub(crate) tool: &'static str,
+    pub(crate) version: &'static str,
+    pub(crate) project_root: PathBuf,
+    pub(crate) source: String,
+    pub(crate) changed_files: Vec<String>,
+    pub(crate) impacted_symbols: Vec<String>,
+    pub(crate) impacted_functions: Vec<ChangeImpactFunction>,
+    pub(crate) impacted_tests: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub(crate) missing_files: Vec<String>,
+    pub(crate) summary: String,
+}
+
+#[derive(Serialize)]
+pub(crate) struct ChangeImpactFunction {
+    pub(crate) name: String,
+    pub(crate) file: String,
+    pub(crate) start_line: u32,
+    pub(crate) depth: usize,
+    pub(crate) reason: String,
 }

@@ -249,6 +249,12 @@ fn list_tools() -> Value {
             "file": s("Optional file path substring to narrow results (e.g. 'routes/user' or 'tcp_core')"),
             "limit": i("Max matches to return (default 20). Lower when include_source=true to stay within context limits.")
         })),
+        tool("context", "Compact LLM-ready function bundle: metadata, direct callers, outgoing calls, related endpoints, and short snippet. Use before edits to reduce token load.", json!({
+            "path": p(),
+            "name": s("Symbol (function) name to build context for"),
+            "file": s("Optional file path substring to narrow results"),
+            "limit": i("Max matches to return (default 3, max 20)")
+        })),
         tool("all_endpoints", "List all detected HTTP routes. Use when flow returns no match — find the exact path substring here, then retry flow. Frameworks: Express, Actix-web, Rocket, Flask, FastAPI, gin, echo, net/http. Not supported: Axum, NestJS, Fastify, Django, dynamic routers.", json!({"path": p()})),
         tool_req("flow", "One-call vertical slice: endpoint → handler → call chain to db/http/queue boundary. Always prefer over api_trace+trace_down+symbol. Endpoint detection: Express, Actix-web, Rocket, Flask, FastAPI, gin, echo. Call chain tracing: Rust and Go only — on other languages the handler is returned but the chain will be empty.", &["endpoint"], json!({
             "path": p(),
@@ -349,6 +355,15 @@ fn list_tools() -> Value {
             "symbol": s("Function name to analyse (exact match on the callee name)"),
             "depth": i("Maximum call-graph depth to traverse (default 2)")
         })),
+        tool("change_impact", "Given changed files, estimate impacted functions and likely test files. If files are omitted, auto-detects git working-tree changes.", json!({
+            "path": p(),
+            "files": json!({
+                "type": "array",
+                "description": "Optional changed files (relative or absolute paths)",
+                "items": {"type": "string"}
+            }),
+            "depth": i("Maximum reverse-call depth from changed symbols (default 2)")
+        })),
         tool_req("graph_rename", "Rename a symbol at its definition and every call site atomically. Word-boundary matching prevents partial renames (renaming 'parse' won't corrupt 'parse_all'). Always prefer over str.replace or multi_patch for renames. Run blast_radius first to understand scope.", &["name", "new_name"], json!({
             "path": p(),
             "name": s("Current identifier name to rename"),
@@ -425,6 +440,25 @@ impl Args {
     fn uint_opt(&self, key: &str) -> Option<usize> {
         self.0.get(key).and_then(|v| v.as_u64()).map(|n| n as usize)
     }
+    fn str_array_opt(&self, key: &str) -> Option<Vec<String>> {
+        let v = self.0.get(key)?;
+        if let Some(arr) = v.as_array() {
+            let out: Vec<String> = arr
+                .iter()
+                .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                .collect();
+            return if out.is_empty() { None } else { Some(out) };
+        }
+        if let Some(s) = v.as_str() {
+            let out: Vec<String> = s
+                .split(',')
+                .map(|x| x.trim().to_string())
+                .filter(|x| !x.is_empty())
+                .collect();
+            return if out.is_empty() { None } else { Some(out) };
+        }
+        None
+    }
     fn uint_req(&self, key: &str, tool: &str) -> Result<u64> {
         self.0
             .get(key)
@@ -470,6 +504,12 @@ async fn call_tool(params: Value) -> Result<Value> {
             path,
             a.str_req("name", "symbol")?,
             a.bool_opt("include_source").unwrap_or(false),
+            a.str_opt("file"),
+            a.uint_opt("limit"),
+        )?),
+        "context" => ok_text(crate::engine::context(
+            path,
+            a.str_req("name", "context")?,
             a.str_opt("file"),
             a.uint_opt("limit"),
         )?),
@@ -595,6 +635,11 @@ async fn call_tool(params: Value) -> Result<Value> {
         "blast_radius" => ok_text(crate::engine::blast_radius(
             path,
             a.str_req("symbol", "blast_radius")?,
+            a.uint_opt("depth"),
+        )?),
+        "change_impact" => ok_text(crate::engine::change_impact(
+            path,
+            a.str_array_opt("files"),
             a.uint_opt("depth"),
         )?),
         "graph_rename" => ok_text(crate::engine::graph_rename(

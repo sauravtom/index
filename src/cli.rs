@@ -15,6 +15,8 @@ pub enum Command {
     Daemon(DaemonArgs),
     /// Detailed lookup of a function symbol from the bake index.
     Symbol(SymbolArgs),
+    /// LLM-ready compact context for a function (callers, outgoing calls, snippet).
+    Context(ContextArgs),
     /// List all detected API endpoints from the bake index.
     AllEndpoints(AllEndpointsArgs),
     /// Vertical slice: endpoint → handler → call chain in one call.
@@ -56,6 +58,8 @@ pub enum Command {
     TraceDown(TraceDownArgs),
     /// Audit dead code, god functions, and duplicate hints.
     Health(HealthArgs),
+    /// Estimate impacted functions/tests from changed files.
+    ChangeImpact(ChangeImpactArgs),
     /// Remove a function from a file by name.
     GraphDelete(GraphDeleteArgs),
     /// Search for functions by natural-language intent (local TF-IDF, no external deps).
@@ -189,6 +193,25 @@ pub struct SymbolArgs {
     pub file: Option<String>,
 
     /// Maximum number of matches to return (default 20).
+    #[arg(long)]
+    pub limit: Option<usize>,
+}
+
+#[derive(Args, Debug)]
+pub struct ContextArgs {
+    /// Optional path to the project directory to analyze.
+    #[arg(long)]
+    pub path: Option<String>,
+
+    /// Symbol (function) name to build context for.
+    #[arg(long)]
+    pub name: String,
+
+    /// Optional file path substring to narrow results.
+    #[arg(long)]
+    pub file: Option<String>,
+
+    /// Maximum number of context matches to return (default 3, max 20).
     #[arg(long)]
     pub limit: Option<usize>,
 }
@@ -534,6 +557,7 @@ pub async fn run(command: Option<Command>) -> anyhow::Result<()> {
         Some(Command::Warm(args)) => run_warm(args).await?,
         Some(Command::Daemon(args)) => run_daemon(args).await?,
         Some(Command::Symbol(args)) => run_symbol(args).await?,
+        Some(Command::Context(args)) => run_context(args).await?,
         Some(Command::AllEndpoints(args)) => run_all_endpoints(args).await?,
         Some(Command::Flow(args)) => run_flow(args).await?,
         Some(Command::Slice(args)) => run_slice(args).await?,
@@ -554,6 +578,7 @@ pub async fn run(command: Option<Command>) -> anyhow::Result<()> {
         Some(Command::GraphMove(args)) => run_graph_move(args).await?,
         Some(Command::TraceDown(args)) => run_trace_down(args).await?,
         Some(Command::Health(args)) => run_health(args).await?,
+        Some(Command::ChangeImpact(args)) => run_change_impact(args).await?,
         Some(Command::GraphDelete(args)) => run_graph_delete(args).await?,
         Some(Command::SemanticSearch(args)) => run_semantic_search(args).await?,
         Some(Command::DaemonRun(args)) => run_daemon_run(args).await?,
@@ -615,6 +640,12 @@ async fn run_symbol(args: SymbolArgs) -> anyhow::Result<()> {
         args.file,
         args.limit,
     )?;
+    println!("{json}");
+    Ok(())
+}
+
+async fn run_context(args: ContextArgs) -> anyhow::Result<()> {
+    let json = crate::engine::context(args.path, args.name, args.file, args.limit)?;
     println!("{json}");
     Ok(())
 }
@@ -798,8 +829,34 @@ pub struct HealthArgs {
     pub top: Option<usize>,
 }
 
+#[derive(Args, Debug)]
+pub struct ChangeImpactArgs {
+    /// Optional path to the project directory to analyze.
+    #[arg(long)]
+    pub path: Option<String>,
+
+    /// Changed files. Repeat the flag or pass comma-separated values.
+    #[arg(long, value_delimiter = ',', num_args = 1..)]
+    pub files: Vec<String>,
+
+    /// Maximum reverse-call depth from changed symbols (default 2).
+    #[arg(long)]
+    pub depth: Option<usize>,
+}
+
 async fn run_health(args: HealthArgs) -> anyhow::Result<()> {
     let json = crate::engine::health(args.path, args.top)?;
+    println!("{json}");
+    Ok(())
+}
+
+async fn run_change_impact(args: ChangeImpactArgs) -> anyhow::Result<()> {
+    let files = if args.files.is_empty() {
+        None
+    } else {
+        Some(args.files)
+    };
+    let json = crate::engine::change_impact(args.path, files, args.depth)?;
     println!("{json}");
     Ok(())
 }

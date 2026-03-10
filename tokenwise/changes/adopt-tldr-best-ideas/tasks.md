@@ -12,8 +12,8 @@
 - [x] 2.3 Add file-change hook examples (git + editor).
 
 ## 3. Phase 3: LLM Context APIs
-- [ ] 3.1 Add `context` command/tool for compact function bundles.
-- [ ] 3.2 Add `change-impact` command/tool to map changed files to impacted tests/functions.
+- [x] 3.1 Add `context` command/tool for compact function bundles.
+- [x] 3.2 Add `change-impact` command/tool to map changed files to impacted tests/functions.
 
 ## 4. Phase 4: Deep Analysis Layers
 - [ ] 4.1 Add initial CFG command for Rust/Go.

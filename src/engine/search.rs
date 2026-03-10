@@ -3,8 +3,9 @@ use std::fs;
 use anyhow::{anyhow, Result};
 
 use super::types::{
-    FileFunctionSummary, FileFunctionsPayload, SemanticMatch, SemanticSearchPayload,
-    SupersearchMatch, SupersearchPayload, SymbolMatch, SymbolPayload,
+    ContextCaller, ContextPayload, ContextResult, FileFunctionSummary, FileFunctionsPayload,
+    SemanticMatch, SemanticSearchPayload, SupersearchMatch, SupersearchPayload, SymbolMatch,
+    SymbolPayload,
 };
 use super::util::{load_bake_index, resolve_project_root};
 
@@ -188,6 +189,176 @@ pub fn symbol(
 
     let json = serde_json::to_string_pretty(&payload)?;
     Ok(json)
+}
+
+/// Public entrypoint for the `context` tool: compact, LLM-ready function context.
+/// Includes definition metadata, direct callers, outgoing calls, related endpoints,
+/// and a short code snippet.
+pub fn context(
+    path: Option<String>,
+    symbol: String,
+    file: Option<String>,
+    limit: Option<usize>,
+) -> Result<String> {
+    let root = resolve_project_root(path)?;
+    let bake = load_bake_index(&root)?
+        .ok_or_else(|| anyhow!("No bake index found. Run `bake` first to build bakes/latest/bake.json."))?;
+
+    let needle = symbol.to_lowercase();
+    let file_filter = file.as_deref().map(str::to_lowercase);
+    let max_results = limit.unwrap_or(3).min(20);
+
+    let project_fn_names: std::collections::HashSet<String> = bake
+        .functions
+        .iter()
+        .map(|f| f.name.to_lowercase())
+        .collect();
+
+    let mut incoming: std::collections::HashMap<String, u32> = std::collections::HashMap::new();
+    for f in &bake.functions {
+        for c in &f.calls {
+            *incoming.entry(c.callee.to_lowercase()).or_insert(0) += 1;
+        }
+    }
+
+    let mut candidates: Vec<&crate::lang::IndexedFunction> = bake
+        .functions
+        .iter()
+        .filter(|f| {
+            let n = f.name.to_lowercase();
+            n == needle || n.contains(&needle)
+        })
+        .filter(|f| {
+            file_filter
+                .as_deref()
+                .map_or(true, |ff| f.file.to_lowercase().contains(ff))
+        })
+        .collect();
+
+    candidates.sort_by(|a, b| {
+        let a_exact = (a.name.to_lowercase() == needle) as i32;
+        let b_exact = (b.name.to_lowercase() == needle) as i32;
+        let a_in = incoming.get(&a.name.to_lowercase()).copied().unwrap_or(0);
+        let b_in = incoming.get(&b.name.to_lowercase()).copied().unwrap_or(0);
+        b_exact
+            .cmp(&a_exact)
+            .then(b_in.cmp(&a_in))
+            .then(b.complexity.cmp(&a.complexity))
+            .then(a.file.cmp(&b.file))
+    });
+    candidates.truncate(max_results);
+
+    let mut results: Vec<ContextResult> = Vec::new();
+    for f in candidates {
+        let fname_lc = f.name.to_lowercase();
+
+        let mut direct_callers: Vec<ContextCaller> = bake
+            .functions
+            .iter()
+            .filter(|caller| {
+                caller
+                    .calls
+                    .iter()
+                    .any(|c| c.callee.to_lowercase() == fname_lc)
+            })
+            .map(|caller| ContextCaller {
+                name: caller.name.clone(),
+                file: caller.file.clone(),
+                start_line: caller.start_line,
+                complexity: caller.complexity,
+            })
+            .collect();
+        direct_callers.sort_by(|a, b| {
+            b.complexity
+                .cmp(&a.complexity)
+                .then(a.file.cmp(&b.file))
+                .then(a.start_line.cmp(&b.start_line))
+        });
+        direct_callers.dedup_by(|a, b| {
+            a.name == b.name && a.file == b.file && a.start_line == b.start_line
+        });
+        direct_callers.truncate(10);
+
+        let mut outgoing_calls: Vec<String> = f
+            .calls
+            .iter()
+            .map(|c| c.callee.to_lowercase())
+            .filter(|callee| project_fn_names.contains(callee))
+            .collect();
+        outgoing_calls.sort();
+        outgoing_calls.dedup();
+
+        let related_endpoints = bake
+            .endpoints
+            .iter()
+            .filter(|e| {
+                e.handler_name
+                    .as_deref()
+                    .map(|h| h.to_lowercase() == fname_lc)
+                    .unwrap_or(false)
+            })
+            .map(|e| super::types::EndpointSummary {
+                method: e.method.clone(),
+                path: e.path.clone(),
+                file: e.file.clone(),
+                handler_name: e.handler_name.clone(),
+            })
+            .collect::<Vec<_>>();
+
+        let snippet = {
+            let full_path = root.join(&f.file);
+            if let Ok(content) = fs::read_to_string(&full_path) {
+                let all_lines: Vec<&str> = content.lines().collect();
+                let total = all_lines.len() as u32;
+                if total == 0 {
+                    None
+                } else {
+                    let start = f.start_line.saturating_sub(1).min(total.saturating_sub(1)) as usize;
+                    let end = (f.start_line + 9).min(f.end_line).min(total).saturating_sub(1) as usize;
+                    if start <= end && end < all_lines.len() {
+                        Some(all_lines[start..=end].join("\n"))
+                    } else {
+                        None
+                    }
+                }
+            } else {
+                None
+            }
+        };
+
+        results.push(ContextResult {
+            name: f.name.clone(),
+            file: f.file.clone(),
+            start_line: f.start_line,
+            end_line: f.end_line,
+            complexity: f.complexity,
+            visibility: f.visibility.clone(),
+            module_path: if f.module_path.is_empty() {
+                None
+            } else {
+                Some(f.module_path.clone())
+            },
+            qualified_name: if f.qualified_name.is_empty() {
+                None
+            } else {
+                Some(f.qualified_name.clone())
+            },
+            parent_type: f.parent_type.clone(),
+            snippet,
+            direct_callers,
+            outgoing_calls,
+            related_endpoints,
+        });
+    }
+
+    let payload = ContextPayload {
+        tool: "context",
+        version: env!("CARGO_PKG_VERSION"),
+        project_root: root,
+        symbol,
+        results,
+    };
+    Ok(serde_json::to_string_pretty(&payload)?)
 }
 
 /// Public entrypoint for the `supersearch` tool: text-based search over source files.

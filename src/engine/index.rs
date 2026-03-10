@@ -179,6 +179,7 @@ fn tool_catalog() -> Vec<ToolDescription> {
         ToolDescription { name: "find_docs",        description: "Find README, .env, config, or Docker files in the project.", requires_bake: false, category: "read",         parallelisable: true },
         ToolDescription { name: "architecture_map", description: "Project directory structure with inferred roles (routes, services, models). Ranks directories by intent.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "symbol",           description: "Exact/partial lookup of functions, structs, enums, traits, and type aliases. Set include_source=true to retrieve the body inline. Returns parent_type for methods.", requires_bake: true, category: "read-indexed", parallelisable: true },
+        ToolDescription { name: "context",          description: "Compact function bundle for LLM context: metadata, direct callers, outgoing calls, related endpoints, and short snippet.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "file_functions",   description: "List all functions in a file with line ranges and cyclomatic complexity.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "supersearch",      description: "AST-aware search over source files. Prefer over grep. Supports context and pattern filters.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "semantic_search",  description: "Search by natural-language intent. Uses local ONNX embeddings (fastembed AllMiniLML6V2) stored in SQLite; falls back to TF-IDF if embeddings DB is absent. Test functions excluded from index. Use when you know what a function does but not its name.", requires_bake: true, category: "read-indexed", parallelisable: true },
@@ -190,6 +191,7 @@ fn tool_catalog() -> Vec<ToolDescription> {
         ToolDescription { name: "suggest_placement",description: "Suggest which existing file to add a new function to, based on type and related symbol.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "package_summary",  description: "Deep-dive into a package/module: files, functions, and endpoints matching a path substring.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "blast_radius",     description: "Find all functions that transitively call a given symbol. `callers` array is depth-limited (default depth=2); `total_callers` is the full unlimited transitive count. Returns affected files too.", requires_bake: true, category: "read-indexed", parallelisable: true },
+        ToolDescription { name: "change_impact",    description: "Map changed files to impacted functions and likely test files. Auto-detects git changes when files are omitted.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "trace_down",       description: "Trace a function's call chain downward to external boundaries (db, http, queue). BFS up to max depth. Go + Rust only.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "patch",            description: "Apply a patch to a file. Three modes: (1) by symbol name — pass 'name'; (2) by line range — pass 'file'+'start'+'end'; (3) content-match — pass 'file'+'old_string'+'new_string'. Mode 3 is immune to line drift and preferred for large edits.", requires_bake: false, category: "write", parallelisable: false },
         ToolDescription { name: "patch_bytes",      description: "Splice at exact byte offsets.", requires_bake: true, category: "write",        parallelisable: false },
@@ -219,6 +221,7 @@ fn workflow_catalog() -> Vec<Workflow> {
             description: "Find a function by name and read its source.",
             steps: vec![
                 WorkflowStep { tool: "supersearch", hint: "Search by name or pattern to find the function" },
+                WorkflowStep { tool: "context",     hint: "Get compact callers/callees/snippet before opening full source" },
                 WorkflowStep { tool: "symbol",      hint: "Exact lookup; set include_source=true to get the body inline" },
                 WorkflowStep { tool: "slice",       hint: "Read surrounding context using start_line/end_line from symbol" },
             ],
@@ -250,6 +253,15 @@ fn workflow_catalog() -> Vec<Workflow> {
                 WorkflowStep { tool: "blast_radius", hint: "Get all transitive callers and affected files" },
                 WorkflowStep { tool: "symbol",       hint: "Inspect each caller for context" },
                 WorkflowStep { tool: "slice",        hint: "Read caller bodies to understand the coupling" },
+            ],
+        },
+        Workflow {
+            name: "Assess change impact",
+            description: "Map changed files to impacted functions and likely test files.",
+            steps: vec![
+                WorkflowStep { tool: "change_impact", hint: "Pass files explicitly or let it auto-detect git changes" },
+                WorkflowStep { tool: "symbol",        hint: "Inspect top impacted functions in detail" },
+                WorkflowStep { tool: "slice",         hint: "Read affected tests and critical call paths before editing" },
             ],
         },
         Workflow {

@@ -1,12 +1,13 @@
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
 use anyhow::Result;
 
 use super::types::{
-    DeadFunction, DocMatch, DuplicateEntry, DuplicateGroup, FindDocsPayload, GodFunction,
-    GraphDeletePayload, HealthPayload,
+    ChangeImpactFunction, ChangeImpactPayload, DeadFunction, DocMatch, DuplicateEntry,
+    DuplicateGroup, FindDocsPayload, GodFunction, GraphDeletePayload, HealthPayload,
 };
 use super::util::{load_bake_index, reindex_files, resolve_project_root};
 
@@ -146,6 +147,228 @@ pub fn blast_radius(path: Option<String>, symbol: String, depth: Option<usize>) 
         "affected_files": affected_files,
         "total_callers": total_callers,
     });
+
+    Ok(serde_json::to_string_pretty(&payload)?)
+}
+
+fn normalize_changed_file(root: &Path, file: &str) -> String {
+    let raw = std::path::PathBuf::from(file);
+    let rel = if raw.is_absolute() {
+        raw.strip_prefix(root).unwrap_or(&raw).to_path_buf()
+    } else {
+        raw
+    };
+    rel.to_string_lossy().replace('\\', "/")
+}
+
+fn detect_changed_files_from_git(root: &Path) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut collect = |args: &[&str]| {
+        let result = Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(args)
+            .output();
+        if let Ok(r) = result {
+            if r.status.success() {
+                let text = String::from_utf8_lossy(&r.stdout);
+                for line in text.lines() {
+                    let trimmed = line.trim();
+                    if !trimmed.is_empty() {
+                        out.push(trimmed.to_string());
+                    }
+                }
+            }
+        }
+    };
+
+    collect(&["diff", "--name-only"]);
+    collect(&["diff", "--cached", "--name-only"]);
+    collect(&["ls-files", "--others", "--exclude-standard"]);
+    out
+}
+
+fn is_test_file(path: &str) -> bool {
+    let lc = path.to_lowercase();
+    lc.contains("/test")
+        || lc.contains("/tests/")
+        || lc.contains("/spec/")
+        || lc.ends_with("_test.rs")
+        || lc.ends_with("_test.go")
+        || lc.ends_with("_test.py")
+        || lc.ends_with(".spec.ts")
+        || lc.ends_with(".spec.js")
+}
+
+/// Public entrypoint for the `change_impact` tool.
+/// Maps changed files to impacted functions and likely test files.
+pub fn change_impact(
+    path: Option<String>,
+    files: Option<Vec<String>>,
+    depth: Option<usize>,
+) -> Result<String> {
+    let root = resolve_project_root(path)?;
+    let bake = load_bake_index(&root)?
+        .ok_or_else(|| anyhow::anyhow!("No bake index found. Run `bake` first."))?;
+    let max_depth = depth.unwrap_or(2).max(1);
+
+    let (source, raw_files) = match files {
+        Some(f) if !f.is_empty() => ("provided".to_string(), f),
+        _ => ("git_auto".to_string(), detect_changed_files_from_git(&root)),
+    };
+    if raw_files.is_empty() {
+        return Err(anyhow::anyhow!(
+            "No changed files detected. Pass --files explicitly or run inside a git worktree with local changes."
+        ));
+    }
+
+    let mut changed_files: Vec<String> = raw_files
+        .iter()
+        .map(|f| normalize_changed_file(&root, f))
+        .filter(|f| !f.is_empty())
+        .collect();
+    changed_files.sort();
+    changed_files.dedup();
+
+    let indexed_files: HashSet<String> = bake
+        .files
+        .iter()
+        .map(|f| f.path.to_string_lossy().replace('\\', "/"))
+        .collect();
+
+    let mut missing_files: Vec<String> = Vec::new();
+    let mut changed_indexed: Vec<String> = Vec::new();
+    for f in &changed_files {
+        if indexed_files.contains(f) {
+            changed_indexed.push(f.clone());
+        } else {
+            missing_files.push(f.clone());
+        }
+    }
+    changed_indexed.sort();
+    changed_indexed.dedup();
+    missing_files.sort();
+    missing_files.dedup();
+
+    let changed_set: HashSet<String> = changed_indexed.iter().cloned().collect();
+
+    // Seed impacted functions with directly changed functions.
+    let mut impacted: BTreeMap<(String, String, u32), ChangeImpactFunction> = BTreeMap::new();
+    let mut seed_symbols: Vec<String> = Vec::new();
+    for f in &bake.functions {
+        if changed_set.contains(&f.file) {
+            impacted.insert(
+                (f.name.clone(), f.file.clone(), f.start_line),
+                ChangeImpactFunction {
+                    name: f.name.clone(),
+                    file: f.file.clone(),
+                    start_line: f.start_line,
+                    depth: 0,
+                    reason: "changed_file".to_string(),
+                },
+            );
+            seed_symbols.push(f.name.to_lowercase());
+        }
+    }
+    seed_symbols.sort();
+    seed_symbols.dedup();
+
+    // Build reverse call graph: callee -> callers.
+    let mut called_by: HashMap<String, Vec<&crate::lang::IndexedFunction>> = HashMap::new();
+    for f in &bake.functions {
+        for c in &f.calls {
+            called_by
+                .entry(c.callee.to_lowercase())
+                .or_default()
+                .push(f);
+        }
+    }
+
+    let mut visited_symbols: HashSet<String> = seed_symbols.iter().cloned().collect();
+    let mut q: VecDeque<(String, usize)> = seed_symbols
+        .iter()
+        .cloned()
+        .map(|s| (s, 0usize))
+        .collect();
+
+    while let Some((sym, d)) = q.pop_front() {
+        if d >= max_depth {
+            continue;
+        }
+        if let Some(callers) = called_by.get(&sym) {
+            for caller in callers {
+                impacted
+                    .entry((caller.name.clone(), caller.file.clone(), caller.start_line))
+                    .or_insert(ChangeImpactFunction {
+                        name: caller.name.clone(),
+                        file: caller.file.clone(),
+                        start_line: caller.start_line,
+                        depth: d + 1,
+                        reason: format!("calls {}", sym),
+                    });
+                let caller_sym = caller.name.to_lowercase();
+                if visited_symbols.insert(caller_sym.clone()) {
+                    q.push_back((caller_sym, d + 1));
+                }
+            }
+        }
+    }
+
+    let mut impacted_symbols: Vec<String> = visited_symbols.into_iter().collect();
+    impacted_symbols.sort();
+    impacted_symbols.dedup();
+
+    let impacted_symbol_set: HashSet<String> = impacted_symbols.iter().cloned().collect();
+    let mut impacted_tests: HashSet<String> = HashSet::new();
+
+    for f in &changed_indexed {
+        if is_test_file(f) {
+            impacted_tests.insert(f.clone());
+        }
+    }
+
+    for f in &bake.functions {
+        if !is_test_file(&f.file) {
+            continue;
+        }
+        if f.calls
+            .iter()
+            .any(|c| impacted_symbol_set.contains(&c.callee.to_lowercase()))
+        {
+            impacted_tests.insert(f.file.clone());
+        }
+    }
+
+    let mut impacted_functions: Vec<ChangeImpactFunction> = impacted.into_values().collect();
+    impacted_functions.sort_by(|a, b| {
+        a.depth
+            .cmp(&b.depth)
+            .then(a.file.cmp(&b.file))
+            .then(a.start_line.cmp(&b.start_line))
+    });
+
+    let mut impacted_tests: Vec<String> = impacted_tests.into_iter().collect();
+    impacted_tests.sort();
+
+    let summary = format!(
+        "{} changed file(s) → {} impacted function(s), {} likely test file(s).",
+        changed_files.len(),
+        impacted_functions.len(),
+        impacted_tests.len()
+    );
+
+    let payload = ChangeImpactPayload {
+        tool: "change_impact",
+        version: env!("CARGO_PKG_VERSION"),
+        project_root: root,
+        source,
+        changed_files,
+        impacted_symbols,
+        impacted_functions,
+        impacted_tests,
+        missing_files,
+        summary,
+    };
 
     Ok(serde_json::to_string_pretty(&payload)?)
 }

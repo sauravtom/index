@@ -99,6 +99,12 @@ Notify daemon after edits (for hooks/editor integration):
 tokenwise daemon notify --path /path/to/your/project --file src/auth.rs
 ```
 
+LLM-first quick checks before editing:
+```bash
+tokenwise context --path /path/to/your/project --name login
+tokenwise change-impact --path /path/to/your/project --files src/auth.rs
+```
+
 Daemon config is auto-created on first `warm` at `.tokenwise/config.json`:
 ```json
 {
@@ -190,6 +196,7 @@ Legacy `/yoyo:*` aliases are still accepted temporarily and emit a deprecation w
 | Tool | What it does |
 |---|---|
 | `symbol` | Find a function by name — file, line range, optionally full body. |
+| `context` | Compact function bundle: metadata, callers, outgoing calls, endpoints, snippet. |
 | `slice` | Read any line range from any file. |
 | `supersearch` | AST-aware search across all files. Replaces grep. |
 | `semantic_search` | Find functions by intent. Local ONNX embeddings, no API key. |
@@ -200,6 +207,7 @@ Legacy `/yoyo:*` aliases are still accepted temporarily and emit a deprecation w
 | Tool | What it does |
 |---|---|
 | `blast_radius` | All transitive callers of a symbol + affected files. |
+| `change_impact` | Changed files → impacted functions and likely tests to run. |
 | `flow` | Endpoint → handler → call chain in one call. |
 | `trace_down` | BFS call chain to db/http/queue boundary. Rust + Go. |
 | `health` | Dead code, god functions, duplicate names. |
