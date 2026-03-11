@@ -135,6 +135,13 @@ fn decision_map() -> Vec<DecisionEntry> {
             right_field: "dead_code[]",
         },
         DecisionEntry {
+            question: "Which lines influence line N inside function X?",
+            wrong_tool: "read whole file + manual tracing",
+            wrong_because: "Manual tracing misses transitive def-use chains and surrounding control dependencies.",
+            right_tool: "program_slice",
+            right_field: "lines[] + data_dependencies[] + control_dependencies[]",
+        },
+        DecisionEntry {
             question: "Rename X everywhere safely",
             wrong_tool: "str.replace / sed",
             wrong_because: "Corrupts partial matches — renaming is_match also renames is_match_candidate, is_match_at.",
@@ -180,6 +187,9 @@ fn tool_catalog() -> Vec<ToolDescription> {
         ToolDescription { name: "architecture_map", description: "Project directory structure with inferred roles (routes, services, models). Ranks directories by intent.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "symbol",           description: "Exact/partial lookup of functions, structs, enums, traits, and type aliases. Set include_source=true to retrieve the body inline. Returns parent_type for methods.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "context",          description: "Compact function bundle for LLM context: metadata, direct callers, outgoing calls, related endpoints, and short snippet.", requires_bake: true, category: "read-indexed", parallelisable: true },
+        ToolDescription { name: "cfg",              description: "Initial control-flow graph for a function (Rust/Go first). Useful before branch-heavy refactors.", requires_bake: true, category: "read-indexed", parallelisable: true },
+        ToolDescription { name: "dfg",              description: "Initial data-flow graph for a function (Rust/Go first). Tracks variable definitions to uses.", requires_bake: true, category: "read-indexed", parallelisable: true },
+        ToolDescription { name: "program_slice",    description: "Dependency-aware backward slice for a target line in a function (Rust/Go first).", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "file_functions",   description: "List all functions in a file with line ranges and cyclomatic complexity.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "supersearch",      description: "AST-aware search over source files. Prefer over grep. Supports context and pattern filters.", requires_bake: true, category: "read-indexed", parallelisable: true },
         ToolDescription { name: "semantic_search",  description: "Search by natural-language intent. Uses local ONNX embeddings (fastembed AllMiniLML6V2) stored in SQLite; falls back to TF-IDF if embeddings DB is absent. Test functions excluded from index. Use when you know what a function does but not its name.", requires_bake: true, category: "read-indexed", parallelisable: true },
@@ -224,6 +234,15 @@ fn workflow_catalog() -> Vec<Workflow> {
                 WorkflowStep { tool: "context",     hint: "Get compact callers/callees/snippet before opening full source" },
                 WorkflowStep { tool: "symbol",      hint: "Exact lookup; set include_source=true to get the body inline" },
                 WorkflowStep { tool: "slice",       hint: "Read surrounding context using start_line/end_line from symbol" },
+            ],
+        },
+        Workflow {
+            name: "Dependency debugging",
+            description: "Trace control/data dependencies before fixing a bug in a complex function.",
+            steps: vec![
+                WorkflowStep { tool: "cfg",           hint: "Inspect control-flow branches/loops for the function" },
+                WorkflowStep { tool: "dfg",           hint: "Inspect variable def-use edges for the same function" },
+                WorkflowStep { tool: "program_slice", hint: "Pick a target line and pull only dependency-relevant lines" },
             ],
         },
         Workflow {

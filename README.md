@@ -103,6 +103,9 @@ LLM-first quick checks before editing:
 ```bash
 tokenwise context --path /path/to/your/project --name login
 tokenwise change-impact --path /path/to/your/project --files src/auth.rs
+tokenwise cfg --path /path/to/your/project --file src/auth.rs --function login
+tokenwise dfg --path /path/to/your/project --file src/auth.rs --function login
+tokenwise program-slice --path /path/to/your/project --file src/auth.rs --function login --line 42
 ```
 
 Daemon config is auto-created on first `warm` at `.tokenwise/config.json`:
@@ -206,6 +209,9 @@ Legacy `/yoyo:*` aliases are still accepted temporarily and emit a deprecation w
 ### Understand
 | Tool | What it does |
 |---|---|
+| `cfg` | Initial control-flow graph for a function (Rust + Go first). |
+| `dfg` | Initial data-flow graph for a function (variable defs → uses, Rust + Go first). |
+| `program_slice` (`program-slice` in CLI) | Dependency-aware backward slice for a target line in a function. |
 | `blast_radius` | All transitive callers of a symbol + affected files. |
 | `change_impact` | Changed files → impacted functions and likely tests to run. |
 | `flow` | Endpoint → handler → call chain in one call. |
@@ -232,6 +238,22 @@ Legacy `/yoyo:*` aliases are still accepted temporarily and emit a deprecation w
 | `graph_delete` | Remove a function by name. Checks blast radius first. |
 
 **Languages:** TypeScript, JavaScript, Rust, Python, Go, C, C++, C#, Java, Kotlin, PHP, Ruby, Swift, Bash
+
+---
+
+## Benchmarking
+
+Run latency + semantic recall benchmark on the local fixture:
+
+```bash
+python3 evals/bench_latency_semantic.py \
+  --project tests/fixtures/sample_project \
+  --tasks evals/tasks/tokenwise_semantic_benchmark.json \
+  --runs 5 \
+  --out evals/benchmarks/phase5-baseline.json
+```
+
+See benchmark details in [`evals/benchmarks/README.md`](./evals/benchmarks/README.md).
 
 ---
 

@@ -17,6 +17,12 @@ pub enum Command {
     Symbol(SymbolArgs),
     /// LLM-ready compact context for a function (callers, outgoing calls, snippet).
     Context(ContextArgs),
+    /// Initial control-flow graph for a function (Rust/Go first).
+    Cfg(CfgArgs),
+    /// Initial data-flow graph for a function (Rust/Go first).
+    Dfg(DfgArgs),
+    /// Dependency-aware backward slice for a target line in a function.
+    ProgramSlice(ProgramSliceArgs),
     /// List all detected API endpoints from the bake index.
     AllEndpoints(AllEndpointsArgs),
     /// Vertical slice: endpoint → handler → call chain in one call.
@@ -214,6 +220,55 @@ pub struct ContextArgs {
     /// Maximum number of context matches to return (default 3, max 20).
     #[arg(long)]
     pub limit: Option<usize>,
+}
+
+#[derive(Args, Debug)]
+pub struct CfgArgs {
+    /// Optional path to the project directory to analyze.
+    #[arg(long)]
+    pub path: Option<String>,
+
+    /// File path relative to the project root.
+    #[arg(long)]
+    pub file: String,
+
+    /// Function name inside the file.
+    #[arg(long)]
+    pub function: String,
+}
+
+#[derive(Args, Debug)]
+pub struct DfgArgs {
+    /// Optional path to the project directory to analyze.
+    #[arg(long)]
+    pub path: Option<String>,
+
+    /// File path relative to the project root.
+    #[arg(long)]
+    pub file: String,
+
+    /// Function name inside the file.
+    #[arg(long)]
+    pub function: String,
+}
+
+#[derive(Args, Debug)]
+pub struct ProgramSliceArgs {
+    /// Optional path to the project directory to analyze.
+    #[arg(long)]
+    pub path: Option<String>,
+
+    /// File path relative to the project root.
+    #[arg(long)]
+    pub file: String,
+
+    /// Function name inside the file.
+    #[arg(long)]
+    pub function: String,
+
+    /// 1-based target line for backward slicing.
+    #[arg(long)]
+    pub line: u32,
 }
 
 #[derive(Args, Debug)]
@@ -558,6 +613,9 @@ pub async fn run(command: Option<Command>) -> anyhow::Result<()> {
         Some(Command::Daemon(args)) => run_daemon(args).await?,
         Some(Command::Symbol(args)) => run_symbol(args).await?,
         Some(Command::Context(args)) => run_context(args).await?,
+        Some(Command::Cfg(args)) => run_cfg(args).await?,
+        Some(Command::Dfg(args)) => run_dfg(args).await?,
+        Some(Command::ProgramSlice(args)) => run_program_slice(args).await?,
         Some(Command::AllEndpoints(args)) => run_all_endpoints(args).await?,
         Some(Command::Flow(args)) => run_flow(args).await?,
         Some(Command::Slice(args)) => run_slice(args).await?,
@@ -646,6 +704,24 @@ async fn run_symbol(args: SymbolArgs) -> anyhow::Result<()> {
 
 async fn run_context(args: ContextArgs) -> anyhow::Result<()> {
     let json = crate::engine::context(args.path, args.name, args.file, args.limit)?;
+    println!("{json}");
+    Ok(())
+}
+
+async fn run_cfg(args: CfgArgs) -> anyhow::Result<()> {
+    let json = crate::engine::cfg(args.path, args.file, args.function)?;
+    println!("{json}");
+    Ok(())
+}
+
+async fn run_dfg(args: DfgArgs) -> anyhow::Result<()> {
+    let json = crate::engine::dfg(args.path, args.file, args.function)?;
+    println!("{json}");
+    Ok(())
+}
+
+async fn run_program_slice(args: ProgramSliceArgs) -> anyhow::Result<()> {
+    let json = crate::engine::program_slice(args.path, args.file, args.function, args.line)?;
     println!("{json}");
     Ok(())
 }

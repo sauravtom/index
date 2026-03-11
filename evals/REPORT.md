@@ -41,6 +41,27 @@ Tests: top-3 embedding recall for natural language queries (fastembed AllMiniLML
 | axum | 5/5 — 100% | `evals/tasks/axum_semantic.json` |
 | **Combined** | **18/18 — 100%** | |
 
+### Latency benchmark
+
+Fixture benchmark (repeatable local run) for core read-indexed commands and semantic search.
+
+- Runner: `evals/bench_latency_semantic.py`
+- Fixture: `tests/fixtures/sample_project`
+- Query set: `evals/tasks/tokenwise_semantic_benchmark.json`
+- Baseline artifact: `evals/benchmarks/phase5-baseline.json`
+
+| Command | Median | p95 |
+|---|---:|---:|
+| `symbol` | 6.48ms | 8.20ms |
+| `context` | 6.12ms | 6.40ms |
+| `change-impact` | 6.03ms | 6.37ms |
+| `cfg` | 6.13ms | 6.76ms |
+| `dfg` | 6.08ms | 6.56ms |
+| `program-slice` | 6.04ms | 6.16ms |
+| `semantic-search` | 143.55ms | 147.70ms |
+
+Semantic top-3 recall on the fixture task set: **5/5 (100%)**.
+
 ### Combined
 
 | Type | tokenwise | Claude Code (no index) |

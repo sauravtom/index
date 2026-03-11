@@ -1,5 +1,6 @@
 mod analysis;
 mod api;
+mod deep;
 #[cfg(test)]
 mod e2e_tests;
 mod edit;
@@ -13,6 +14,7 @@ pub(crate) mod util;
 
 pub use analysis::{blast_radius, change_impact, find_docs, graph_delete, health};
 pub use api::{all_endpoints, api_surface, api_trace, crud_operations, flow};
+pub use deep::{cfg, dfg, program_slice};
 pub use edit::{multi_patch, patch, patch_by_symbol, patch_bytes, patch_string, slice, PatchEdit};
 pub use graph::{graph_add, graph_create, graph_move, graph_rename, trace_down};
 pub use index::{bake, llm_instructions, shake};

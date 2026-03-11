@@ -12,8 +12,7 @@ mod tests {
 
     /// Absolute path to the checked-in fixture.
     fn fixture_src() -> PathBuf {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/sample_project")
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/sample_project")
     }
 
     /// Copy the fixture into a fresh TempDir and bake it. Returns the TempDir
@@ -65,8 +64,17 @@ mod tests {
         let dir = setup();
         // math.rs: add, subtract, multiply, square
         // utils.rs: sum_three, clamp, format_result
-        for name in &["add", "subtract", "multiply", "square", "sum_three", "clamp", "format_result"] {
-            let out = crate::engine::symbol(root(&dir), name.to_string(), false, None, None).unwrap();
+        for name in &[
+            "add",
+            "subtract",
+            "multiply",
+            "square",
+            "sum_three",
+            "clamp",
+            "format_result",
+        ] {
+            let out =
+                crate::engine::symbol(root(&dir), name.to_string(), false, None, None).unwrap();
             let v: serde_json::Value = serde_json::from_str(&out).unwrap();
             let matches = v["matches"].as_array().unwrap();
             assert!(
@@ -86,7 +94,8 @@ mod tests {
         let out = crate::engine::blast_radius(root(&dir), "multiply".into(), Some(1)).unwrap();
         let v: serde_json::Value = serde_json::from_str(&out).unwrap();
         let callers: Vec<&str> = v["callers"]
-            .as_array().unwrap()
+            .as_array()
+            .unwrap()
             .iter()
             .map(|c| c["caller"].as_str().unwrap())
             .collect();
@@ -103,7 +112,8 @@ mod tests {
         let out = crate::engine::blast_radius(root(&dir), "multiply".into(), Some(1)).unwrap();
         let v: serde_json::Value = serde_json::from_str(&out).unwrap();
         let files: Vec<&str> = v["affected_files"]
-            .as_array().unwrap()
+            .as_array()
+            .unwrap()
             .iter()
             .map(|f| f.as_str().unwrap())
             .collect();
@@ -122,7 +132,8 @@ mod tests {
         let out = crate::engine::blast_radius(root(&dir), "add".into(), Some(2)).unwrap();
         let v: serde_json::Value = serde_json::from_str(&out).unwrap();
         let files: Vec<&str> = v["affected_files"]
-            .as_array().unwrap()
+            .as_array()
+            .unwrap()
             .iter()
             .map(|f| f.as_str().unwrap())
             .collect();
@@ -161,9 +172,18 @@ mod tests {
         let math = fs::read_to_string(dir.path().join("src/math.rs")).unwrap();
         let utils = fs::read_to_string(dir.path().join("src/utils.rs")).unwrap();
 
-        assert!(math.contains("fn add_ints("), "definition not renamed in math.rs");
-        assert!(utils.contains("add_ints("), "call site not updated in utils.rs");
-        assert!(!utils.contains("add(add("), "old call site still present in utils.rs");
+        assert!(
+            math.contains("fn add_ints("),
+            "definition not renamed in math.rs"
+        );
+        assert!(
+            utils.contains("add_ints("),
+            "call site not updated in utils.rs"
+        );
+        assert!(
+            !utils.contains("add(add("),
+            "old call site still present in utils.rs"
+        );
     }
 
     // ── graph_move ────────────────────────────────────────────────────────────
@@ -194,7 +214,10 @@ mod tests {
 
         let extra = fs::read_to_string(dir.path().join("src/extra.rs")).unwrap();
         // The function body should be present
-        assert!(extra.contains("fn sum_three"), "sum_three not moved to extra.rs");
+        assert!(
+            extra.contains("fn sum_three"),
+            "sum_three not moved to extra.rs"
+        );
         // The import for add should have been injected
         assert!(
             extra.contains("use crate::math::add") || extra.contains("use crate::math"),
@@ -222,7 +245,30 @@ pub fn fetch_user(id: u32) -> String {
     format!("user:{}", id)
 }
 "#,
-        ).unwrap();
+        )
+        .unwrap();
+
+        crate::engine::bake(Some(dir.path().to_string_lossy().into_owned())).unwrap();
+        dir
+    }
+
+    fn setup_with_data_flow() -> TempDir {
+        let dir = TempDir::new().unwrap();
+        fs::create_dir_all(dir.path().join("src")).unwrap();
+
+        fs::write(
+            dir.path().join("src/lib.rs"),
+            r#"pub fn compute(a: i64, b: i64) -> i64 {
+    let sum = a + b;
+    let doubled = sum * 2;
+    if doubled > 10 {
+        return doubled;
+    }
+    sum
+}
+"#,
+        )
+        .unwrap();
 
         crate::engine::bake(Some(dir.path().to_string_lossy().into_owned())).unwrap();
         dir
@@ -237,7 +283,10 @@ pub fn fetch_user(id: u32) -> String {
         assert_eq!(v["tool"], "flow");
         assert!(v["endpoint"]["path"].as_str().unwrap().contains("/users"));
         assert_eq!(v["handler"]["name"], "get_user");
-        assert!(v["handler"]["file"].as_str().unwrap().contains("handlers.rs"));
+        assert!(v["handler"]["file"]
+            .as_str()
+            .unwrap()
+            .contains("handlers.rs"));
     }
 
     #[test]
@@ -260,8 +309,16 @@ pub fn fetch_user(id: u32) -> String {
         let v: serde_json::Value = serde_json::from_str(&out).unwrap();
 
         let summary = v["summary"].as_str().unwrap();
-        assert!(summary.contains("get_user"), "summary missing handler: {}", summary);
-        assert!(summary.contains("/users"), "summary missing endpoint: {}", summary);
+        assert!(
+            summary.contains("get_user"),
+            "summary missing handler: {}",
+            summary
+        );
+        assert!(
+            summary.contains("/users"),
+            "summary missing endpoint: {}",
+            summary
+        );
     }
 
     #[test]
@@ -271,15 +328,116 @@ pub fn fetch_user(id: u32) -> String {
         let v: serde_json::Value = serde_json::from_str(&out).unwrap();
 
         let source = v["handler"]["source"].as_str();
-        assert!(source.is_some(), "expected source to be present with include_source=true");
-        assert!(source.unwrap().contains("fetch_user"), "source missing body content");
+        assert!(
+            source.is_some(),
+            "expected source to be present with include_source=true"
+        );
+        assert!(
+            source.unwrap().contains("fetch_user"),
+            "source missing body content"
+        );
     }
 
     #[test]
     fn e2e_flow_errors_on_unknown_endpoint() {
         let dir = setup_with_endpoint();
-        let err = crate::engine::flow(root(&dir), "/nonexistent".into(), None, None, false).unwrap_err();
-        assert!(err.to_string().contains("No endpoint matching"), "unexpected error: {}", err);
+        let err =
+            crate::engine::flow(root(&dir), "/nonexistent".into(), None, None, false).unwrap_err();
+        assert!(
+            err.to_string().contains("No endpoint matching"),
+            "unexpected error: {}",
+            err
+        );
+    }
+
+    // ── cfg / dfg / program_slice ───────────────────────────────────────────
+
+    #[test]
+    fn e2e_cfg_returns_branch_edges() {
+        let dir = setup();
+        let out = crate::engine::cfg(root(&dir), "src/utils.rs".into(), "clamp".into()).unwrap();
+        let v: serde_json::Value = serde_json::from_str(&out).unwrap();
+
+        assert_eq!(v["tool"], "cfg");
+        assert_eq!(v["supported"], true);
+        assert!(v["nodes"].as_array().unwrap().len() > 1);
+        assert!(v["edges"].as_array().unwrap().len() > 0);
+
+        let branch_edge = v["edges"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|e| e["kind"] == "true" || e["kind"] == "false");
+        assert!(
+            branch_edge,
+            "expected at least one branch edge in cfg output"
+        );
+    }
+
+    #[test]
+    fn e2e_dfg_tracks_variable_dependencies() {
+        let dir = setup_with_data_flow();
+        let out = crate::engine::dfg(root(&dir), "src/lib.rs".into(), "compute".into()).unwrap();
+        let v: serde_json::Value = serde_json::from_str(&out).unwrap();
+
+        assert_eq!(v["tool"], "dfg");
+        assert_eq!(v["supported"], true);
+
+        let edges = v["edges"].as_array().unwrap();
+        assert!(
+            edges.iter().any(|e| e["variable"] == "sum"),
+            "expected 'sum' data-flow edge"
+        );
+        assert!(
+            edges.iter().any(|e| e["variable"] == "doubled"),
+            "expected 'doubled' data-flow edge"
+        );
+    }
+
+    #[test]
+    fn e2e_program_slice_includes_data_and_control_dependencies() {
+        let dir = setup_with_data_flow();
+        let source = fs::read_to_string(dir.path().join("src/lib.rs")).unwrap();
+        let target_line = source
+            .lines()
+            .position(|line| line.contains("return doubled"))
+            .map(|idx| idx as u32 + 1)
+            .unwrap();
+
+        let out = crate::engine::program_slice(
+            root(&dir),
+            "src/lib.rs".into(),
+            "compute".into(),
+            target_line,
+        )
+        .unwrap();
+        let v: serde_json::Value = serde_json::from_str(&out).unwrap();
+        assert_eq!(v["tool"], "program_slice");
+        assert_eq!(v["supported"], true);
+
+        let lines: Vec<String> = v["lines"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|l| l["code"].as_str().unwrap_or("").to_string())
+            .collect();
+
+        assert!(
+            lines.iter().any(|l| l.contains("return doubled")),
+            "slice missing target line"
+        );
+        assert!(
+            lines.iter().any(|l| l.contains("let doubled")),
+            "slice missing defining line for doubled"
+        );
+        assert!(
+            lines.iter().any(|l| l.contains("let sum")),
+            "slice missing transitive data dependency for sum"
+        );
+        assert!(
+            lines.iter().any(|l| l.contains("if doubled > 10")),
+            "slice missing control dependency"
+        );
     }
 
     // ── graph_delete ──────────────────────────────────────────────────────────
@@ -292,8 +450,17 @@ pub fn fetch_user(id: u32) -> String {
         assert!(v["bytes_removed"].as_u64().unwrap() > 0);
 
         let content = fs::read_to_string(dir.path().join("src/utils.rs")).unwrap();
-        assert!(!content.contains("fn clamp"), "clamp still present after delete");
-        assert!(content.contains("fn sum_three"), "sum_three was incorrectly removed");
-        assert!(content.contains("fn format_result"), "format_result was incorrectly removed");
+        assert!(
+            !content.contains("fn clamp"),
+            "clamp still present after delete"
+        );
+        assert!(
+            content.contains("fn sum_three"),
+            "sum_three was incorrectly removed"
+        );
+        assert!(
+            content.contains("fn format_result"),
+            "format_result was incorrectly removed"
+        );
     }
 }

@@ -255,6 +255,22 @@ fn list_tools() -> Value {
             "file": s("Optional file path substring to narrow results"),
             "limit": i("Max matches to return (default 3, max 20)")
         })),
+        tool_req("cfg", "Initial control-flow graph for a function. Rust/Go first. Useful before refactoring branch-heavy code.", &["file", "function"], json!({
+            "path": p(),
+            "file": s("File path relative to the project root"),
+            "function": s("Function name inside the file")
+        })),
+        tool_req("dfg", "Initial data-flow graph for a function. Tracks variable definitions to uses. Rust/Go first.", &["file", "function"], json!({
+            "path": p(),
+            "file": s("File path relative to the project root"),
+            "function": s("Function name inside the file")
+        })),
+        tool_req("program_slice", "Dependency-aware backward slice for a target line inside a function. Returns only data/control-relevant lines. Rust/Go first.", &["file", "function", "line"], json!({
+            "path": p(),
+            "file": s("File path relative to the project root"),
+            "function": s("Function name inside the file"),
+            "line": i("1-based target line number")
+        })),
         tool("all_endpoints", "List all detected HTTP routes. Use when flow returns no match — find the exact path substring here, then retry flow. Frameworks: Express, Actix-web, Rocket, Flask, FastAPI, gin, echo, net/http. Not supported: Axum, NestJS, Fastify, Django, dynamic routers.", json!({"path": p()})),
         tool_req("flow", "One-call vertical slice: endpoint → handler → call chain to db/http/queue boundary. Always prefer over api_trace+trace_down+symbol. Endpoint detection: Express, Actix-web, Rocket, Flask, FastAPI, gin, echo. Call chain tracing: Rust and Go only — on other languages the handler is returned but the chain will be empty.", &["endpoint"], json!({
             "path": p(),
@@ -512,6 +528,22 @@ async fn call_tool(params: Value) -> Result<Value> {
             a.str_req("name", "context")?,
             a.str_opt("file"),
             a.uint_opt("limit"),
+        )?),
+        "cfg" => ok_text(crate::engine::cfg(
+            path,
+            a.str_req("file", "cfg")?,
+            a.str_req("function", "cfg")?,
+        )?),
+        "dfg" => ok_text(crate::engine::dfg(
+            path,
+            a.str_req("file", "dfg")?,
+            a.str_req("function", "dfg")?,
+        )?),
+        "program_slice" => ok_text(crate::engine::program_slice(
+            path,
+            a.str_req("file", "program_slice")?,
+            a.str_req("function", "program_slice")?,
+            a.uint_req("line", "program_slice")? as u32,
         )?),
         "slice" => ok_text(crate::engine::slice(
             path,

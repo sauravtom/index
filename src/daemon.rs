@@ -677,3 +677,137 @@ pub fn warm(path: Option<String>, no_daemon: bool, threshold: Option<usize>) -> 
 
     Ok(serde_json::to_string_pretty(&payload)?)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::Value;
+    use std::time::{Duration, Instant};
+    use tempfile::TempDir;
+
+    fn project_root(dir: &TempDir) -> Option<String> {
+        Some(dir.path().to_string_lossy().into_owned())
+    }
+
+    fn write_file(root: &TempDir, rel: &str, content: &str) {
+        let p = root.path().join(rel);
+        if let Some(parent) = p.parent() {
+            fs::create_dir_all(parent).unwrap();
+        }
+        fs::write(p, content).unwrap();
+    }
+
+    fn setup_project() -> TempDir {
+        let dir = TempDir::new().unwrap();
+        write_file(
+            &dir,
+            "src/lib.rs",
+            r#"pub fn add(a: i64, b: i64) -> i64 {
+    a + b
+}
+"#,
+        );
+        write_file(
+            &dir,
+            "src/other.rs",
+            r#"pub fn mul(a: i64, b: i64) -> i64 {
+    a * b
+}
+"#,
+        );
+        crate::engine::bake(project_root(&dir)).unwrap();
+        dir
+    }
+
+    fn parse_json(raw: &str) -> Value {
+        serde_json::from_str(raw).unwrap()
+    }
+
+    fn wait_until<F>(timeout: Duration, mut cond: F) -> bool
+    where
+        F: FnMut() -> bool,
+    {
+        let start = Instant::now();
+        while start.elapsed() < timeout {
+            if cond() {
+                return true;
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        false
+    }
+
+    #[test]
+    fn daemon_notify_uses_inline_mode_when_offline() {
+        let dir = setup_project();
+        let out = notify(project_root(&dir), "src/lib.rs".into()).unwrap();
+        let v = parse_json(&out);
+
+        assert_eq!(v["tool"], "daemon_notify");
+        assert_eq!(v["mode"], "inline");
+        assert_eq!(v["daemon_running"], false);
+
+        let status_out = status(project_root(&dir)).unwrap();
+        let s = parse_json(&status_out);
+        assert_eq!(s["running"], false);
+        assert!(s["total_notifies"].as_u64().unwrap_or(0) >= 1);
+        assert!(s["total_reindexes"].as_u64().unwrap_or(0) >= 1);
+    }
+
+    #[test]
+    fn daemon_status_reports_deduped_pending_queue_files() {
+        let dir = setup_project();
+        notify(project_root(&dir), "src/lib.rs".into()).unwrap();
+        notify(project_root(&dir), "src/lib.rs".into()).unwrap();
+
+        let status_out = status(project_root(&dir)).unwrap();
+        let s = parse_json(&status_out);
+
+        assert_eq!(s["running"], false);
+        assert_eq!(s["queue_entries"], 2);
+        assert_eq!(s["pending_unique_files"], 1);
+        assert_eq!(s["total_notifies"], 2);
+    }
+
+    #[test]
+    fn run_forever_processes_queue_and_updates_state() {
+        let dir = setup_project();
+        let root = dir.path().to_path_buf();
+        let root_str = root.to_string_lossy().into_owned();
+
+        let worker = std::thread::spawn({
+            let root_for_thread = root_str.clone();
+            move || run_forever(Some(root_for_thread), Some(2), Some(100))
+        });
+
+        assert!(
+            wait_until(Duration::from_secs(5), || {
+                let out = status(Some(root_str.clone())).unwrap();
+                let v = parse_json(&out);
+                v["running"].as_bool().unwrap_or(false)
+            }),
+            "daemon loop did not report running in time"
+        );
+
+        let n1 = parse_json(&notify(Some(root_str.clone()), "src/lib.rs".into()).unwrap());
+        let n2 = parse_json(&notify(Some(root_str.clone()), "src/other.rs".into()).unwrap());
+        assert_eq!(n1["mode"], "queued");
+        assert_eq!(n2["mode"], "queued");
+
+        assert!(
+            wait_until(Duration::from_secs(8), || {
+                let out = status(Some(root_str.clone())).unwrap();
+                let v = parse_json(&out);
+                v["total_reindexes"].as_u64().unwrap_or(0) >= 1
+            }),
+            "daemon did not flush queued changes"
+        );
+
+        let _ = fs::remove_file(pid_path(&root));
+        worker.join().unwrap().unwrap();
+
+        let final_status = parse_json(&status(Some(root_str)).unwrap());
+        assert_eq!(final_status["running"], false);
+        assert_eq!(final_status["dirty_files"], 0);
+    }
+}

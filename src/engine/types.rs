@@ -352,8 +352,8 @@ pub(crate) struct DocMatch {
 #[derive(Serialize)]
 pub(crate) struct SyntaxError {
     pub(crate) line: u32,
-    pub(crate) kind: String,   // "error" | "missing"
-    pub(crate) text: String,   // up to 80 chars of the offending node
+    pub(crate) kind: String, // "error" | "missing"
+    pub(crate) text: String, // up to 80 chars of the offending node
 }
 
 #[derive(Serialize)]
@@ -449,6 +449,108 @@ pub(crate) struct SlicePayload {
     pub(crate) end: u32,
     pub(crate) total_lines: u32,
     pub(crate) lines: Vec<String>,
+}
+
+#[derive(Serialize)]
+pub(crate) struct CfgPayload {
+    pub(crate) tool: &'static str,
+    pub(crate) version: &'static str,
+    pub(crate) project_root: PathBuf,
+    pub(crate) file: String,
+    pub(crate) symbol: String,
+    pub(crate) language: String,
+    pub(crate) supported: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) reason: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) alternatives: Vec<String>,
+    pub(crate) entry_line: u32,
+    pub(crate) exit_lines: Vec<u32>,
+    pub(crate) nodes: Vec<CfgNode>,
+    pub(crate) edges: Vec<CfgEdge>,
+    pub(crate) summary: String,
+}
+
+#[derive(Serialize, Clone)]
+pub(crate) struct CfgNode {
+    pub(crate) id: u32,
+    pub(crate) line: u32,
+    pub(crate) kind: String,
+    pub(crate) text: String,
+}
+
+#[derive(Serialize, Clone, Eq, Hash, PartialEq)]
+pub(crate) struct CfgEdge {
+    pub(crate) from: u32,
+    pub(crate) to: u32,
+    pub(crate) kind: String,
+}
+
+#[derive(Serialize)]
+pub(crate) struct DfgPayload {
+    pub(crate) tool: &'static str,
+    pub(crate) version: &'static str,
+    pub(crate) project_root: PathBuf,
+    pub(crate) file: String,
+    pub(crate) symbol: String,
+    pub(crate) language: String,
+    pub(crate) supported: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) reason: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) alternatives: Vec<String>,
+    pub(crate) nodes: Vec<DfgNode>,
+    pub(crate) edges: Vec<DfgEdge>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) unresolved_inputs: Vec<String>,
+    pub(crate) summary: String,
+}
+
+#[derive(Serialize, Clone)]
+pub(crate) struct DfgNode {
+    pub(crate) line: u32,
+    pub(crate) kind: String,
+    pub(crate) code: String,
+    pub(crate) defs: Vec<String>,
+    pub(crate) uses: Vec<String>,
+}
+
+#[derive(Serialize, Clone, Eq, Hash, PartialEq)]
+pub(crate) struct DfgEdge {
+    pub(crate) variable: String,
+    pub(crate) from_line: u32,
+    pub(crate) to_line: u32,
+}
+
+#[derive(Serialize)]
+pub(crate) struct ProgramSlicePayload {
+    pub(crate) tool: &'static str,
+    pub(crate) version: &'static str,
+    pub(crate) project_root: PathBuf,
+    pub(crate) file: String,
+    pub(crate) symbol: String,
+    pub(crate) language: String,
+    pub(crate) line: u32,
+    pub(crate) supported: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) reason: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) alternatives: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) seed_variables: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) control_dependencies: Vec<u32>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub(crate) data_dependencies: Vec<DfgEdge>,
+    pub(crate) lines: Vec<ProgramSliceLine>,
+    pub(crate) summary: String,
+}
+
+#[derive(Serialize)]
+pub(crate) struct ProgramSliceLine {
+    pub(crate) line: u32,
+    pub(crate) kind: String,
+    pub(crate) code: String,
 }
 
 #[derive(Serialize)]

@@ -4,3 +4,4 @@ bakes/
 .fastembed_cache/
 .claude/
 .cursor/
+tests/fixtures/sample_project/.tokenwise/

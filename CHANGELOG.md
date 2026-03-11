@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.22.7] - 2026-03-11
+
+### Added
+- New deep-analysis tools (CLI + MCP):
+  - `cfg` — initial control-flow graph for a function (Rust/Go first)
+  - `dfg` — initial data-flow graph (variable defs → uses, Rust/Go first)
+  - `program_slice` / `program-slice` — dependency-aware backward slice for a target line
+- New daemon test coverage in `src/daemon.rs`:
+  - inline fallback notify behavior when daemon is offline
+  - queue dedup visibility via `daemon status`
+  - `run_forever` queue flush + lifecycle state transitions
+- New benchmark runner: `evals/bench_latency_semantic.py`.
+- New semantic benchmark task set: `evals/tasks/tokenwise_semantic_benchmark.json`.
+- New baseline benchmark artifact: `evals/benchmarks/phase5-baseline.json` and benchmark guide `evals/benchmarks/README.md`.
+
+### Changed
+- Tool catalog + workflow guidance now includes dependency-debugging chain:
+  - `cfg` → `dfg` → `program_slice`
+- README and eval docs now document the benchmark workflow and latest latency/semantic baseline.
+
 ## [0.22.6] - 2026-03-10
 
 ### Added

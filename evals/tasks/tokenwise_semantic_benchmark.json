@@ -1,0 +1,31 @@
+{
+  "codebase": "tokenwise_fixture",
+  "codebase_path": "tests/fixtures/sample_project",
+  "queries": [
+    {
+      "id": "fixture-sem-001",
+      "query": "add two integer values",
+      "expected_in_top3": ["add"]
+    },
+    {
+      "id": "fixture-sem-002",
+      "query": "multiply two numbers",
+      "expected_in_top3": ["multiply"]
+    },
+    {
+      "id": "fixture-sem-003",
+      "query": "limit a value between min and max bounds",
+      "expected_in_top3": ["clamp"]
+    },
+    {
+      "id": "fixture-sem-004",
+      "query": "format output string with a label and numeric value",
+      "expected_in_top3": ["format_result"]
+    },
+    {
+      "id": "fixture-sem-005",
+      "query": "sum exactly three values",
+      "expected_in_top3": ["sum_three"]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "eval": "latency_semantic_benchmark",
+  "generated_at": "2026-03-11T08:08:07",
+  "tokenwise_bin": "target/debug/tokenwise",
+  "project": "tests/fixtures/sample_project",
+  "runs_per_command": 5,
+  "latency_ms": [
+    {
+      "runs": 5,
+      "min_ms": 6.19,
+      "mean_ms": 6.75,
+      "median_ms": 6.48,
+      "p95_ms": 8.2,
+      "command": "symbol"
+    },
+    {
+      "runs": 5,
+      "min_ms": 5.99,
+      "mean_ms": 6.15,
+      "median_ms": 6.12,
+      "p95_ms": 6.4,
+      "command": "context"
+    },
+    {
+      "runs": 5,
+      "min_ms": 5.85,
+      "mean_ms": 6.04,
+      "median_ms": 6.03,
+      "p95_ms": 6.37,
+      "command": "change-impact"
+    },
+    {
+      "runs": 5,
+      "min_ms": 6.01,
+      "mean_ms": 6.29,
+      "median_ms": 6.13,
+      "p95_ms": 6.76,
+      "command": "cfg"
+    },
+    {
+      "runs": 5,
+      "min_ms": 5.99,
+      "mean_ms": 6.15,
+      "median_ms": 6.08,
+      "p95_ms": 6.56,
+      "command": "dfg"
+    },
+    {
+      "runs": 5,
+      "min_ms": 5.98,
+      "mean_ms": 6.06,
+      "median_ms": 6.04,
+      "p95_ms": 6.16,
+      "command": "program-slice"
+    },
+    {
+      "runs": 5,
+      "min_ms": 142.31,
+      "mean_ms": 144.72,
+      "median_ms": 143.55,
+      "p95_ms": 147.7,
+      "command": "semantic-search"
+    }
+  ],
+  "semantic_recall_top3": {
+    "top3_passed": 5,
+    "top3_total": 5,
+    "top3_pct": 100.0,
+    "queries": [
+      {
+        "id": "fixture-sem-001",
+        "query": "add two integer values",
+        "expected_in_top3": [
+          "add"
+        ],
+        "top3": [
+          "sum_three",
+          "add",
+          "subtract"
+        ],
+        "pass": true
+      },
+      {
+        "id": "fixture-sem-002",
+        "query": "multiply two numbers",
+        "expected_in_top3": [
+          "multiply"
+        ],
+        "top3": [
+          "multiply",
+          "square",
+          "subtract"
+        ],
+        "pass": true
+      },
+      {
+        "id": "fixture-sem-003",
+        "query": "limit a value between min and max bounds",
+        "expected_in_top3": [
+          "clamp"
+        ],
+        "top3": [
+          "clamp",
+          "subtract",
+          "sum_three"
+        ],
+        "pass": true
+      },
+      {
+        "id": "fixture-sem-004",
+        "query": "format output string with a label and numeric value",
+        "expected_in_top3": [
+          "format_result"
+        ],
+        "top3": [
+          "format_result",
+          "multiply",
+          "subtract"
+        ],
+        "pass": true
+      },
+      {
+        "id": "fixture-sem-005",
+        "query": "sum exactly three values",
+        "expected_in_top3": [
+          "sum_three"
+        ],
+        "top3": [
+          "sum_three",
+          "subtract",
+          "multiply"
+        ],
+        "pass": true
+      }
+    ]
+  }
+}
